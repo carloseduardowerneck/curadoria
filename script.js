@@ -1,16 +1,10 @@
 /***************************************************************
  * Curadoria BSB — site estático lendo CSV
- * Versão com:
- *  - multi-região
- *  - filtro e badge de preço
- *  - filtro de preço ORDENADO (Barato → Muito Caro)
  ***************************************************************/
 
 const CSV_PATH = "curadoria_bsb.csv";
 
-/* ============================
-   ELEMENTOS DO DOM
-============================ */
+// Elementos do DOM
 const elGrid = document.getElementById("grid");
 const elStatus = document.getElementById("status");
 const elCount = document.getElementById("count");
@@ -19,19 +13,14 @@ const elEmpty = document.getElementById("empty");
 const elSearch = document.getElementById("search");
 const elCat = document.getElementById("filter-category");
 const elReg = document.getElementById("filter-region");
-const elPrice = document.getElementById("filter-price");
 const elSort = document.getElementById("sort");
 const elClear = document.getElementById("clear");
 
-/* ============================
-   DADOS
-============================ */
+// Dados carregados
 let rows = [];
 let view = [];
 
-/* ============================
-   UTILIDADES
-============================ */
+// ---------- util: normalização ----------
 function norm(s){
   return String(s ?? "")
     .trim()
@@ -40,67 +29,53 @@ function norm(s){
     .replace(/\p{Diacritic}/gu, "");
 }
 
-/* ============================
-   ORDEM DE PREÇO
-============================ */
-const PRICE_ORDER = {
-  "Barato": 1,
-  "Preço Ok": 2,
-  "Caro": 3,
-  "Muito Caro": 4
-};
-
-function priceRank(p){
-  return PRICE_ORDER[p] ?? 999;
-}
-
-/* ============================
-   REGIÕES (MULTI-TAG)
-============================ */
+// ---------- detectar REGIÕES como TAGS (multi-label) ----------
 function detectRegions(text){
   const t = norm(text);
   const regions = [];
 
   if (t.includes("lago norte")) regions.push("Lago Norte");
   if (t.includes("lago sul")) regions.push("Lago Sul");
-
   if (t.includes("asa norte")) regions.push("Asa Norte");
   if (t.includes("asa sul")) regions.push("Asa Sul");
-
   if (t.includes("sudoeste")) regions.push("Sudoeste");
   if (t.includes("noroeste")) regions.push("Noroeste");
-  if (t.includes("vila planalto")) regions.push("Vila Planalto");
-
+  if (t.includes("octogonal")) regions.push("Octogonal");
+  if (t.includes("vicente pires") || t.includes("vicente-pires")) regions.push("Vicente Pires");
   if (t.includes("aguas claras") || t.includes("águas claras")) regions.push("Águas Claras");
   if (t.includes("guara") || t.includes("guará")) regions.push("Guará");
   if (t.includes("taguatinga")) regions.push("Taguatinga");
   if (t.includes("ceilandia") || t.includes("ceilândia")) regions.push("Ceilândia");
+  if (t.includes("samambaia")) regions.push("Samambaia");
+  if (t.includes("sobradinho")) regions.push("Sobradinho");
+  if (t.includes("planaltina")) regions.push("Planaltina");
+  if (t.includes("gama")) regions.push("Gama");
+  if (t.includes("plano piloto") || t === "plano piloto") regions.push("Plano Piloto");
+  if (t.includes("vila planalto")) regions.push("Vila Planalto");
 
   return Array.from(new Set(regions));
 }
 
-/* ============================
-   CSV PARSER
-============================ */
+// ---------- parser CSV robusto ----------
 function detectDelimiter(text){
-  const first = text.split(/\r?\n/).find(l => l.trim());
-  const c = (first.match(/,/g) || []).length;
-  const s = (first.match(/;/g) || []).length;
-  return s > c ? ";" : ",";
+  const firstLine = text.split(/\r?\n/).find(l => l.trim().length > 0) || "";
+  const commas = (firstLine.match(/,/g) || []).length;
+  const semis  = (firstLine.match(/;/g) || []).length;
+  return semis > commas ? ";" : ",";
 }
 
-function splitCSVLine(line, d){
+function splitCSVLine(line, delim){
   const out = [];
-  let cur = "", q = false;
-
-  for(let i=0;i<line.length;i++){
+  let cur = "";
+  let inQuotes = false;
+  for(let i=0; i<line.length; i++){
     const ch = line[i];
     if(ch === '"'){
-      if(q && line[i+1] === '"'){ cur += '"'; i++; }
-      else q = !q;
+      if(inQuotes && line[i+1] === '"'){ cur += '"'; i++; } 
+      else { inQuotes = !inQuotes; }
       continue;
     }
-    if(ch === d && !q){ out.push(cur); cur=""; continue; }
+    if(ch === delim && !inQuotes){ out.push(cur); cur = ""; continue; }
     cur += ch;
   }
   out.push(cur);
@@ -108,197 +83,185 @@ function splitCSVLine(line, d){
 }
 
 function parseCSV(text){
-  const d = detectDelimiter(text);
-  const lines = text.split(/\r?\n/).filter(l => l.trim());
-  const headers = splitCSVLine(lines[0], d);
-  return lines.slice(1).map(l => {
-    const parts = splitCSVLine(l, d);
-    const o = {};
-    headers.forEach((h,i)=>o[h]=parts[i]||"");
-    return o;
-  });
+  const delim = detectDelimiter(text);
+  const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+  if(lines.length === 0) return [];
+  const headers = splitCSVLine(lines[0], delim).map(h => h.trim());
+  const data = [];
+  for(let i=1; i<lines.length; i++){
+    const parts = splitCSVLine(lines[i], delim);
+    const obj = {};
+    for(let c=0; c<headers.length; c++){ obj[headers[c]] = (parts[c] ?? "").trim(); }
+    data.push(obj);
+  }
+  return data;
 }
 
-/* ============================
-   ALIASES
-============================ */
+// ---------- mapeamento de colunas ----------
 const aliases = {
-  name: ["nome","nome do local","local"],
-  category: ["categoria","tipo"],
-  price: ["preco","preço"],
-  region: ["bairro","localização","localizacao"],
-  desc: ["recomendacoes de pratos","descrição","descricao"],
-  coords: ["coordenadas"]
+  name: ["nome", "nome do local", "local", "lugar", "estabelecimento", "title"],
+  category: ["categoria", "tipo", "tipo de comida", "comida", "category"],
+  region: ["bairro", "regiao", "região", "area", "localizacao", "localização"],
+  desc: ["descricao", "descrição", "comentario", "dica", "recomendacoes de pratos", "recomendações de pratos"],
+  maps: ["maps", "google maps", "mapa"],
+  coords: ["coordenadas", "coord", "latlng", "latitude"]
 };
 
-function findColumn(headers,key){
-  const hs = headers.map(h=>({raw:h,n:norm(h)}));
-  const list = aliases[key] || [];
+function findColumn(headers, key){
+  const hs = headers.map(h => ({ raw: h, n: norm(h) }));
+  const list = aliases[key];
+  if (!list) return null;
   for(const a of list){
-    const f = hs.find(h=>h.n===norm(a));
-    if(f) return f.raw;
-  }
-  for(const a of list){
-    const f = hs.find(h=>h.n.includes(norm(a)));
-    if(f) return f.raw;
+    const target = norm(a);
+    const found = hs.find(h => h.n === target || h.n.includes(target));
+    if(found) return found.raw;
   }
   return null;
 }
 
-function pick(o,c){ return c ? o[c] ?? "" : ""; }
+function pick(obj, col){ return col ? (obj[col] ?? "") : ""; }
 
-/* ============================
-   MODEL
-============================ */
+function safeLink(url){
+  const u = String(url || "").trim();
+  if(!u) return "";
+  return /^https?:\/\//i.test(u) ? u : "https://" + u;
+}
+
+function mapsFromCoords(coords){
+  const c = String(coords || "").trim();
+  if(!c) return "";
+  const cleaned = c.replace(/;/g, ",").replace(/\s+/g, " ");
+  const match = cleaned.match(/(-?\d+(\.\d+)?)[,\s]+(-?\d+(\.\d+)?)/);
+  if(!match) return "";
+  return `https://www.google.com/maps/search/?api=1&query=${match[1]},${match[3]}`;
+}
+
+// ---------- montar modelo ----------
 function buildModel(data){
-  const h = Object.keys(data[0]||{});
-  const cName = findColumn(h,"name");
-  const cCat  = findColumn(h,"category");
-  const cPri  = findColumn(h,"price");
-  const cReg  = findColumn(h,"region");
-  const cDes  = findColumn(h,"desc");
-  const cCoo  = findColumn(h,"coords");
+  const headers = Object.keys(data[0] || {});
+  const cols = {
+    name: findColumn(headers, "name"),
+    cat: findColumn(headers, "category"),
+    reg: findColumn(headers, "region"),
+    desc: findColumn(headers, "desc"),
+    maps: findColumn(headers, "maps"),
+    coords: findColumn(headers, "coords")
+  };
 
-  return data.map((r,i)=>{
-    const price = pick(r,cPri);
-    const regions = detectRegions(pick(r,cReg));
-    return {
-      name: pick(r,cName)||`Item ${i+1}`,
-      category: pick(r,cCat),
-      price,
-      regions,
-      desc: pick(r,cDes),
-      coords: pick(r,cCoo),
-      searchable: norm([
-        pick(r,cName),
-        pick(r,cCat),
-        price,
-        regions.join(" "),
-        pick(r,cDes)
-      ].join(" "))
-    };
+  return data.map((r, idx) => {
+    const name = pick(r, cols.name) || `Item ${idx+1}`;
+    const category = pick(r, cols.cat);
+    const regionRaw = pick(r, cols.reg);
+    const regionsDetected = detectRegions(regionRaw);
+    const regions = (regionsDetected.length > 0) ? regionsDetected : (regionRaw ? [regionRaw] : []);
+    const desc = pick(r, cols.desc);
+    const coords = pick(r, cols.coords);
+    const maps = pick(r, cols.maps);
+    const searchable = norm([name, category, regions.join(" "), desc].join(" "));
+
+    return { name, category, regions, desc, maps, coords, searchable };
   });
 }
 
-/* ============================
-   UI
-============================ */
-function uniqueSorted(arr){
-  return Array.from(new Set(arr.filter(Boolean)));
+// ---------- UI e Render ----------
+function fillSelect(selectEl, values, firstLabel){
+  selectEl.innerHTML = `<option value="">${firstLabel}</option>`;
+  values.forEach(v => {
+    const op = document.createElement("option");
+    op.value = v; op.textContent = v;
+    selectEl.appendChild(op);
+  });
 }
 
-function fillSelect(select, values, label){
-  select.innerHTML="";
-  select.append(new Option(label,""));
-  values.forEach(v=>select.append(new Option(v,v)));
+function escapeHtml(str){
+  return String(str || "").replaceAll("&", "&").replaceAll("<", "<").replaceAll(">", ">");
 }
 
-/* ============================
-   RENDER
-============================ */
 function render(list){
-  elGrid.innerHTML="";
-  if(!list.length){
+  elGrid.innerHTML = "";
+  if(list.length === 0){
     elEmpty.classList.remove("hidden");
-    elCount.textContent="";
+    elCount.textContent = "";
     return;
   }
   elEmpty.classList.add("hidden");
 
-  list.forEach(it=>{
+  list.forEach(item => {
     const card = document.createElement("article");
-    card.className="card";
-    const badges = [
-      it.category && `<span class="badge">${it.category}</span>`,
-      it.price && `<span class="badge">${it.price}</span>`,
-      ...it.regions.map(r=>`<span class="badge">${r}</span>`)
-    ].filter(Boolean).join("");
+    card.className = "card";
 
-  const cardHTML = `
-  <div class="card">
-    <div class="card-inner">
-      <div class="card-title">
-        <span class="name">${item.name}</span>
-        <span class="badge" style="background: var(--panel-strong)">${item.category}</span>
-      </div>
-      
-      <p class="desc">${item.desc || ""}</p>
+    // Link do mapa (prioridade para coordenadas, depois link direto)
+    const mapUrl = mapsFromCoords(item.coords) || safeLink(item.maps);
 
-      <div class="location-row">
-        ${item.regions.map(r => `<span class="badge">${r}</span>`).join('')}
-        
-        <a href="https://www.google.com/maps/search/?api=1&query=${item.coords}" 
-           target="_blank" 
-           class="map-link">
-           📍 Ver no mapa
-        </a>
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-title">
+          <h3 class="name">${escapeHtml(item.name)}</h3>
+          ${item.category ? `<span class="badge" style="background:var(--panel-strong); color:var(--text)">${escapeHtml(item.category)}</span>` : ''}
+        </div>
+
+        <p class="desc">${escapeHtml(item.desc)}</p>
+
+        <div class="location-row">
+          ${item.regions.map(rg => `<span class="badge">${escapeHtml(rg)}</span>`).join("")}
+          
+          ${mapUrl ? `
+            <a href="${mapUrl}" target="_blank" rel="noopener" class="map-link">
+              📍 Ver no mapa
+            </a>
+          ` : ""}
+        </div>
       </div>
-    </div>
-  </div>
-`;
+    `;
+    elGrid.appendChild(card);
+  });
 
   elCount.textContent = `${list.length} lugares exibidos`;
 }
 
-/* ============================
-   FILTRO
-============================ */
+// ---------- Filtros e Init ----------
 function apply(){
   const q = norm(elSearch.value);
-  const c = elCat.value;
-  const r = elReg.value;
-  const p = elPrice.value;
+  const cat = elCat.value;
+  const reg = elReg.value;
 
-  view = rows.filter(x=>{
-    if(q && !x.searchable.includes(q)) return false;
-    if(c && x.category!==c) return false;
-    if(p && x.price!==p) return false;
-    if(r && !x.regions.includes(r)) return false;
+  let filtered = rows.filter(r => {
+    if(q && !r.searchable.includes(q)) return false;
+    if(cat && r.category !== cat) return false;
+    if(reg && !r.regions.includes(reg)) return false;
     return true;
   });
 
-  render(view);
+  const s = elSort.value;
+  filtered.sort((a,b) => s === "name-desc" ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name));
+  render(filtered);
 }
 
-/* ============================
-   INIT
-============================ */
 async function init(){
-  const res = await fetch(CSV_PATH,{cache:"no-store"});
-  const text = await res.text();
-  rows = buildModel(parseCSV(text));
+  try {
+    const res = await fetch(CSV_PATH, { cache: "no-store" });
+    const text = await res.text();
+    const data = parseCSV(text);
+    if(data.length === 0) return;
 
-  fillSelect(elCat, uniqueSorted(rows.map(r=>r.category)), "Categoria: todas");
+    rows = buildModel(data);
+    fillSelect(elCat, Array.from(new Set(rows.map(r => r.category))).sort(), "Categoria: todas");
+    fillSelect(elReg, Array.from(new Set(rows.flatMap(r => r.regions))).sort(), "Região: todas");
 
-  fillSelect(
-    elReg,
-    uniqueSorted(rows.flatMap(r=>r.regions)),
-    "Região: todas"
-  );
-
-  // 🔥 AQUI está a mágica: preço ORDENADO
-  const prices = uniqueSorted(rows.map(r=>r.price))
-    .sort((a,b)=>priceRank(a)-priceRank(b));
-
-  fillSelect(elPrice, prices, "Preço: todos");
-
-  apply();
+    elStatus.textContent = "Base carregada ✅";
+    apply();
+  } catch(err) {
+    elStatus.textContent = "Erro ao carregar dados.";
+  }
 }
 
-/* ============================
-   EVENTOS
-============================ */
 elSearch.addEventListener("input", apply);
 elCat.addEventListener("change", apply);
 elReg.addEventListener("change", apply);
-elPrice.addEventListener("change", apply);
-elClear.addEventListener("click", ()=>{
-  elSearch.value="";
-  elCat.value="";
-  elReg.value="";
-  elPrice.value="";
+elSort.addEventListener("change", apply);
+elClear.addEventListener("click", () => {
+  elSearch.value = ""; elCat.value = ""; elReg.value = ""; elSort.value = "name-asc";
   apply();
 });
 
 init();
-
