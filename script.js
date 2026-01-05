@@ -14,6 +14,7 @@ const elSearch = document.getElementById("search");
 const elCat = document.getElementById("filter-category");
 const elReg = document.getElementById("filter-region");
 const elPrice = document.getElementById("filter-price");
+const elRating = document.getElementById("filter-rating"); // NOVO
 const elSort = document.getElementById("sort");
 const elClear = document.getElementById("clear");
 
@@ -74,6 +75,17 @@ function getPriceRange(priceStr) {
   return { range: 'muito-caro', class: 'muito-caro', label: `R$ ${value}` };
 }
 
+// ---------- função para classificar avaliações ----------
+function getRatingClass(ratingStr) {
+  const rating = norm(ratingStr);
+  
+  if (rating.includes('perfeito')) return { class: 'perfeito', label: 'Perfeito' };
+  if (rating.includes('otimo') || rating.includes('ótimo')) return { class: 'otimo', label: 'Ótimo' };
+  if (rating.includes('bom')) return { class: 'bom', label: 'Bom' };
+  
+  return { class: '', label: ratingStr || '' };
+}
+
 // ---------- função para extrair valor numérico do preço ----------
 function extractPriceValue(priceStr) {
   const cleanStr = String(priceStr || "").replace(/[R$\s,]/g, '').trim();
@@ -130,7 +142,8 @@ const aliases = {
   desc: ["descricao", "descrição", "comentario", "dica", "recomendacoes de pratos", "recomendações de pratos"],
   maps: ["maps", "google maps", "mapa"],
   coords: ["coordenadas", "coord", "latlng", "latitude"],
-  price: ["preço", "preco", "faixa de preço", "valor", "custo", "price", "price range"]
+  price: ["preço", "preco", "faixa de preço", "valor", "custo", "price", "price range"],
+  rating: ["avaliação", "avaliacao", "classificação", "classificacao", "nota", "rating", "avaliacao pessoal", "minha avaliacao"] // NOVO
 };
 
 function findColumn(headers, key){
@@ -172,7 +185,8 @@ function buildModel(data){
     desc: findColumn(headers, "desc"),
     maps: findColumn(headers, "maps"),
     coords: findColumn(headers, "coords"),
-    price: findColumn(headers, "price")
+    price: findColumn(headers, "price"),
+    rating: findColumn(headers, "rating") // NOVO
   };
 
   return data.map((r, idx) => {
@@ -185,13 +199,14 @@ function buildModel(data){
     const coords = pick(r, cols.coords);
     const maps = pick(r, cols.maps);
     const price = pick(r, cols.price);
+    const rating = pick(r, cols.rating); // NOVO
     
     // Extrai valor numérico para ordenação futura
     const priceValue = extractPriceValue(price);
     
-    const searchable = norm([name, category, regions.join(" "), desc, price].join(" "));
+    const searchable = norm([name, category, regions.join(" "), desc, price, rating].join(" "));
 
-    return { name, category, regions, desc, maps, coords, price, priceValue, searchable };
+    return { name, category, regions, desc, maps, coords, price, rating, priceValue, searchable };
   });
 }
 
@@ -228,6 +243,10 @@ function render(list){
     // Determina a faixa de preço e cor
     const priceInfo = getPriceRange(item.price);
     const priceBadge = item.price ? `<span class="badge price-badge ${priceInfo.class}">${escapeHtml(priceInfo.label)}</span>` : '';
+    
+    // Determina a avaliação e cor
+    const ratingInfo = getRatingClass(item.rating);
+    const ratingBadge = item.rating ? `<span class="badge rating-badge ${ratingInfo.class}">${escapeHtml(ratingInfo.label)}</span>` : '';
 
     card.innerHTML = `
       <div class="card-inner">
@@ -236,6 +255,7 @@ function render(list){
           <div class="title-badges">
             ${item.category ? `<span class="badge" style="background:var(--panel-strong); color:var(--text)">${escapeHtml(item.category)}</span>` : ''}
             ${priceBadge}
+            ${ratingBadge}
           </div>
         </div>
 
@@ -264,6 +284,7 @@ function apply(){
   const cat = elCat.value;
   const reg = elReg.value;
   const priceRange = elPrice.value;
+  const ratingFilter = elRating.value; // NOVO
 
   let filtered = rows.filter(r => {
     if(q && !r.searchable.includes(q)) return false;
@@ -272,6 +293,10 @@ function apply(){
     if(priceRange) {
       const priceInfo = getPriceRange(r.price);
       if(priceInfo.range !== priceRange) return false;
+    }
+    if(ratingFilter) { // NOVO
+      const ratingInfo = getRatingClass(r.rating);
+      if(ratingInfo.class !== ratingFilter) return false;
     }
     return true;
   });
@@ -308,6 +333,21 @@ async function init(){
       elPrice.appendChild(op);
     });
 
+    // Preencher filtro de avaliação
+    const ratingOptions = [
+      {value: 'bom', label: 'Bom'},
+      {value: 'otimo', label: 'Ótimo'},
+      {value: 'perfeito', label: 'Perfeito'}
+    ];
+    
+    elRating.innerHTML = '<option value="">Avaliação: todas</option>';
+    ratingOptions.forEach(opt => {
+      const op = document.createElement("option");
+      op.value = opt.value;
+      op.textContent = opt.label;
+      elRating.appendChild(op);
+    });
+
     elStatus.textContent = "Base carregada ✅";
     apply();
   } catch(err) {
@@ -320,12 +360,14 @@ elSearch.addEventListener("input", apply);
 elCat.addEventListener("change", apply);
 elReg.addEventListener("change", apply);
 elPrice.addEventListener("change", apply);
+elRating.addEventListener("change", apply); // NOVO
 elSort.addEventListener("change", apply);
 elClear.addEventListener("click", () => {
   elSearch.value = ""; 
   elCat.value = ""; 
   elReg.value = ""; 
   elPrice.value = "";
+  elRating.value = ""; // NOVO
   elSort.value = "name-asc";
   apply();
 });
