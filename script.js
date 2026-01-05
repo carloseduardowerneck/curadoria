@@ -14,11 +14,11 @@ const elSearch = document.getElementById("search");
 const elCat = document.getElementById("filter-category");
 const elReg = document.getElementById("filter-region");
 const elPrice = document.getElementById("filter-price");
-const elRating = document.getElementById("filter-rating"); // NOVO
+const elRating = document.getElementById("filter-rating");
 const elSort = document.getElementById("sort");
 const elClear = document.getElementById("clear");
 
-// No início do arquivo, adicione um mapeamento de cores para categorias
+// Mapeamento de cores para categorias
 const categoryColors = {
   'árabe': 'cat-arabe',
   'asiatico': 'cat-asiatico',
@@ -35,29 +35,8 @@ const categoryColors = {
   'comida dia a dia': 'cat-dia-a-dia'
 };
 
-
-
-
-// Função para obter a classe CSS de uma categoria
-function getCategoryClass(category) {
-  if (!category) return '';
-  
-  const normalizedCategory = norm(category);
-  
-  // Procura a chave correspondente
-  for (const [key, cssClass] of Object.entries(categoryColors)) {
-    if (normalizedCategory.includes(norm(key))) {
-      return cssClass;
-    }
-  }
-  
-  // Se não encontrar, cria uma classe genérica baseada no hash
-  return 'cat-generic';
-}
-
 // Dados carregados
 let rows = [];
-let view = [];
 
 // ---------- util: normalização ----------
 function norm(s){
@@ -95,42 +74,146 @@ function detectRegions(text){
   return Array.from(new Set(regions));
 }
 
-// ---------- função para classificar preços ----------
-function getPriceRange(priceStr) {
-  // Remove "R$", vírgulas e espaços
-  const cleanStr = String(priceStr || "").replace(/[R$\s,]/g, '').trim();
+// ---------- função para classificar preços (SIMPLIFICADA) ----------
+function getPriceInfo(priceStr) {
+  if (!priceStr || priceStr.trim() === '') {
+    return { 
+      filterValue: '',
+      cssClass: 'price-indefinido',
+      label: '--'
+    };
+  }
   
-  // Tenta extrair um número
-  const match = cleanStr.match(/(\d+(?:\.\d+)?)/);
-  if (!match) return { range: 'indefinido', class: '', label: priceStr || '--' };
+  const cleanStr = norm(priceStr);
   
-  const value = parseFloat(match[1]);
+  // Verifica descrições textuais
+  if (cleanStr.includes('barato')) {
+    return { 
+      filterValue: 'barato',
+      cssClass: 'price-barato',
+      label: 'Barato'
+    };
+  }
   
-  if (value <= 40) return { range: 'barato', class: 'barato', label: `R$ ${value}` };
-  if (value <= 80) return { range: 'ok', class: 'ok', label: `R$ ${value}` };
-  if (value <= 120) return { range: 'caro', class: 'caro', label: `R$ ${value}` };
-  return { range: 'muito-caro', class: 'muito-caro', label: `R$ ${value}` };
+  if (cleanStr.includes('preço ok') || cleanStr.includes('preco ok') || cleanStr.includes('ok')) {
+    return { 
+      filterValue: 'ok',
+      cssClass: 'price-ok',
+      label: 'Preço OK'
+    };
+  }
+  
+  if (cleanStr.includes('caro') && !cleanStr.includes('muito')) {
+    return { 
+      filterValue: 'caro',
+      cssClass: 'price-caro',
+      label: 'Caro'
+    };
+  }
+  
+  if (cleanStr.includes('muito caro') || cleanStr.includes('muito-caro')) {
+    return { 
+      filterValue: 'muito-caro',
+      cssClass: 'price-muito-caro',
+      label: 'Muito Caro'
+    };
+  }
+  
+  // Se for número
+  const numericStr = cleanStr.replace(/[r$\s,]/g, '');
+  const match = numericStr.match(/(\d+(?:\.\d+)?)/);
+  
+  if (match) {
+    const value = parseFloat(match[1]);
+    
+    if (value <= 40) return { 
+      filterValue: 'barato',
+      cssClass: 'price-barato',
+      label: `R$ ${value}`
+    };
+    if (value <= 80) return { 
+      filterValue: 'ok',
+      cssClass: 'price-ok',
+      label: `R$ ${value}`
+    };
+    if (value <= 120) return { 
+      filterValue: 'caro',
+      cssClass: 'price-caro',
+      label: `R$ ${value}`
+    };
+    return { 
+      filterValue: 'muito-caro',
+      cssClass: 'price-muito-caro',
+      label: `R$ ${value}`
+    };
+  }
+  
+  return { 
+    filterValue: '',
+    cssClass: 'price-indefinido',
+    label: priceStr
+  };
 }
 
-// ---------- função para classificar avaliações ----------
-function getRatingClass(ratingStr) {
-  const rating = norm(ratingStr);
+// ---------- função para classificar avaliações (SIMPLIFICADA) ----------
+function getRatingInfo(ratingStr) {
+  if (!ratingStr || ratingStr.trim() === '') {
+    return { filterValue: '', cssClass: '', label: '' };
+  }
   
-  if (rating.includes('perfeito')) return { class: 'perfeito', label: 'Perfeito' };
-  if (rating.includes('otimo') || rating.includes('ótimo')) return { class: 'otimo', label: 'Ótimo' };
-  if (rating.includes('bom')) return { class: 'bom', label: 'Bom' };
+  const ratingNorm = norm(ratingStr);
   
-  return { class: '', label: ratingStr || '' };
+  if (ratingNorm.includes('perfeito')) {
+    return { 
+      filterValue: 'perfeito',
+      cssClass: 'perfeito',
+      label: 'Perfeito'
+    };
+  }
+  
+  if (ratingNorm.includes('otimo') || ratingNorm.includes('ótimo')) {
+    return { 
+      filterValue: 'otimo',
+      cssClass: 'otimo',
+      label: 'Ótimo'
+    };
+  }
+  
+  if (ratingNorm.includes('bom')) {
+    return { 
+      filterValue: 'bom',
+      cssClass: 'bom',
+      label: 'Bom'
+    };
+  }
+  
+  if (ratingNorm.includes('ainda não fui')) {
+    return { 
+      filterValue: 'pendente',
+      cssClass: 'pendente',
+      label: 'Ainda Não Fui'
+    };
+  }
+  
+  return { filterValue: '', cssClass: '', label: ratingStr };
 }
 
-// ---------- função para extrair valor numérico do preço ----------
-function extractPriceValue(priceStr) {
-  const cleanStr = String(priceStr || "").replace(/[R$\s,]/g, '').trim();
-  const match = cleanStr.match(/(\d+(?:\.\d+)?)/);
-  return match ? parseFloat(match[1]) : null;
+// ---------- função para obter classe CSS de categoria ----------
+function getCategoryClass(category) {
+  if (!category) return '';
+  
+  const normalizedCategory = norm(category);
+  
+  for (const [key, cssClass] of Object.entries(categoryColors)) {
+    if (normalizedCategory.includes(norm(key))) {
+      return cssClass;
+    }
+  }
+  
+  return 'cat-generic';
 }
 
-// ---------- parser CSV robusto ----------
+// ---------- parser CSV ----------
 function detectDelimiter(text){
   const firstLine = text.split(/\r?\n/).find(l => l.trim().length > 0) || "";
   const commas = (firstLine.match(/,/g) || []).length;
@@ -180,7 +263,7 @@ const aliases = {
   maps: ["maps", "google maps", "mapa"],
   coords: ["coordenadas", "coord", "latlng", "latitude"],
   price: ["preço", "preco", "faixa de preço", "valor", "custo", "price", "price range"],
-  rating: ["avaliação", "avaliacao", "classificação", "classificacao", "nota", "rating", "avaliacao pessoal", "minha avaliacao"] // NOVO
+  rating: ["avaliação", "avaliacao", "classificação", "classificacao", "nota", "rating", "avaliacao pessoal", "minha avaliacao"]
 };
 
 function findColumn(headers, key){
@@ -223,7 +306,7 @@ function buildModel(data){
     maps: findColumn(headers, "maps"),
     coords: findColumn(headers, "coords"),
     price: findColumn(headers, "price"),
-    rating: findColumn(headers, "rating") // NOVO
+    rating: findColumn(headers, "rating")
   };
 
   return data.map((r, idx) => {
@@ -236,14 +319,33 @@ function buildModel(data){
     const coords = pick(r, cols.coords);
     const maps = pick(r, cols.maps);
     const price = pick(r, cols.price);
-    const rating = pick(r, cols.rating); // NOVO
+    const rating = pick(r, cols.rating);
     
-    // Extrai valor numérico para ordenação futura
-    const priceValue = extractPriceValue(price);
+    // Obtém informações
+    const priceInfo = getPriceInfo(price);
+    const ratingInfo = getRatingInfo(rating);
+    const categoryClass = getCategoryClass(category);
     
     const searchable = norm([name, category, regions.join(" "), desc, price, rating].join(" "));
 
-    return { name, category, regions, desc, maps, coords, price, rating, priceValue, searchable };
+    return { 
+      name, 
+      category, 
+      regions, 
+      desc, 
+      maps, 
+      coords, 
+      price, 
+      rating,
+      priceFilterValue: priceInfo.filterValue,
+      priceClass: priceInfo.cssClass,
+      priceLabel: priceInfo.label,
+      ratingFilterValue: ratingInfo.filterValue,
+      ratingClass: ratingInfo.cssClass,
+      ratingLabel: ratingInfo.label,
+      categoryClass,
+      searchable 
+    };
   });
 }
 
@@ -260,6 +362,7 @@ function fillSelect(selectEl, values, firstLabel){
 function escapeHtml(str){
   return String(str || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
+
 function render(list){
   elGrid.innerHTML = "";
   if(list.length === 0){
@@ -273,20 +376,19 @@ function render(list){
     const card = document.createElement("article");
     card.className = "card";
 
-    // Link do mapa (prioridade para coordenadas, depois link direto)
+    // Link do mapa
     const mapUrl = mapsFromCoords(item.coords) || safeLink(item.maps);
     
-    // Determina a faixa de preço e cor
-    const priceInfo = getPriceRange(item.price);
-    const priceBadge = item.price ? `<span class="badge price-badge ${priceInfo.class}">${escapeHtml(priceInfo.label)}</span>` : '';
+    // Badges
+    const priceBadge = item.priceLabel !== '--' ? 
+      `<span class="badge price-badge ${item.priceClass}">${escapeHtml(item.priceLabel)}</span>` : '';
     
-    // Determina a avaliação e cor
-    const ratingInfo = getRatingClass(item.rating);
-    const ratingBadge = item.rating ? `<span class="badge rating-badge ${ratingInfo.class}">${escapeHtml(ratingInfo.label)}</span>` : '';
+    // AVALIAÇÃO: Adiciona rating-badge para manter estilização CSS
+    const ratingBadge = item.ratingLabel ? 
+      `<span class="badge rating-badge ${item.ratingClass}">${escapeHtml(item.ratingLabel)}</span>` : '';
     
-    // Obtém a classe da categoria
-    const categoryClass = getCategoryClass(item.category);
-    const categoryBadge = item.category ? `<span class="badge ${categoryClass}">${escapeHtml(item.category)}</span>` : '';
+    const categoryBadge = item.category ? 
+      `<span class="badge ${item.categoryClass}">${escapeHtml(item.category)}</span>` : '';
 
     card.innerHTML = `
       <div class="card-inner">
@@ -324,20 +426,19 @@ function apply(){
   const cat = elCat.value;
   const reg = elReg.value;
   const priceRange = elPrice.value;
-  const ratingFilter = elRating.value; // NOVO
+  const ratingFilter = elRating.value;
 
   let filtered = rows.filter(r => {
     if(q && !r.searchable.includes(q)) return false;
     if(cat && r.category !== cat) return false;
     if(reg && !r.regions.includes(reg)) return false;
-    if(priceRange) {
-      const priceInfo = getPriceRange(r.price);
-      if(priceInfo.range !== priceRange) return false;
-    }
-    if(ratingFilter) { // NOVO
-      const ratingInfo = getRatingClass(r.rating);
-      if(ratingInfo.class !== ratingFilter) return false;
-    }
+    
+    // FILTRO DE PREÇO
+    if(priceRange && r.priceFilterValue !== priceRange) return false;
+    
+    // FILTRO DE AVALIAÇÃO
+    if(ratingFilter && r.ratingFilterValue !== ratingFilter) return false;
+    
     return true;
   });
 
@@ -354,10 +455,12 @@ async function init(){
     if(data.length === 0) return;
 
     rows = buildModel(data);
-    fillSelect(elCat, Array.from(new Set(rows.map(r => r.category))).sort(), "Categoria: todas");
-    fillSelect(elReg, Array.from(new Set(rows.flatMap(r => r.regions))).sort(), "Região: todas");
     
-    // Preencher filtro de preço com as faixas
+    // Preencher filtros
+    fillSelect(elCat, Array.from(new Set(rows.map(r => r.category))).sort(), "Categoria");
+    fillSelect(elReg, Array.from(new Set(rows.flatMap(r => r.regions))).sort(), "Região");
+    
+    // Preencher filtro de preço
     const priceOptions = [
       {value: 'barato', label: 'Barato (0-40)'},
       {value: 'ok', label: 'Preço OK (40-80)'},
@@ -365,7 +468,7 @@ async function init(){
       {value: 'muito-caro', label: 'Muito Caro (120+)'}
     ];
     
-    elPrice.innerHTML = '<option value="">Faixa de preço: todas</option>';
+    elPrice.innerHTML = '<option value="">Preço</option>';
     priceOptions.forEach(opt => {
       const op = document.createElement("option");
       op.value = opt.value;
@@ -373,14 +476,15 @@ async function init(){
       elPrice.appendChild(op);
     });
 
-    // Preencher filtro de avaliação
+    // Preencher filtro de avaliação (valores simples)
     const ratingOptions = [
       {value: 'bom', label: 'Bom'},
       {value: 'otimo', label: 'Ótimo'},
-      {value: 'perfeito', label: 'Perfeito'}
+      {value: 'perfeito', label: 'Perfeito'},
+      {value: 'pendente', label: 'Ainda Não Fui'}
     ];
     
-    elRating.innerHTML = '<option value="">Avaliação: todas</option>';
+    elRating.innerHTML = '<option value="">Avaliação</option>';
     ratingOptions.forEach(opt => {
       const op = document.createElement("option");
       op.value = opt.value;
@@ -392,6 +496,7 @@ async function init(){
     apply();
   } catch(err) {
     elStatus.textContent = "Erro ao carregar dados.";
+    console.error("Erro ao carregar dados:", err);
   }
 }
 
@@ -400,14 +505,14 @@ elSearch.addEventListener("input", apply);
 elCat.addEventListener("change", apply);
 elReg.addEventListener("change", apply);
 elPrice.addEventListener("change", apply);
-elRating.addEventListener("change", apply); // NOVO
+elRating.addEventListener("change", apply);
 elSort.addEventListener("change", apply);
 elClear.addEventListener("click", () => {
   elSearch.value = ""; 
   elCat.value = ""; 
   elReg.value = ""; 
   elPrice.value = "";
-  elRating.value = ""; // NOVO
+  elRating.value = "";
   elSort.value = "name-asc";
   apply();
 });
