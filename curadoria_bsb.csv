@@ -1,6 +1,6 @@
 ﻿Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Coordenadas,Recomendações de Pratos
 "Aglio", "Pizza", "Bom", "Barato","Asa Norte","-15.783942347583432, -47.88793598986715","Carne Seca e Queijo Coalho"
-"Allegro", "Café", "Bom", "Preço Ok", "Asa Norte, Sudoeste", "-15.74611993604196, -47.87880595882222", "Toast Avocado/ Risoto"
+"Alegro", "Café", "Bom", "Preço Ok", "Asa Norte, Sudoeste", "-15.74611993604196, -47.87880595882222", "Toast Avocado/ Risoto"
 "Apache", "Hambúrguer", "Ótimo", "Preço Ok", "Asa Norte, Asa Sul", "-15.77709430058918, -47.885329100015134", "Wakanda"
 "Apache Parrila", "Churrasco/Parrilla", "Ótimo", "Preço Ok", "Asa Sul", "-15.80890530142308, -47.9009187615696", "Costela"
 "Asa Gaúcha", "Churrasco/Parrilla", "Perfeito", "Caro", "Asa Norte", "-15.761295540936647, -47.8925744669007 ", "Montar o Seu"
@@ -75,7 +75,7 @@
 "Padaria Francesa","Café","Ótimo","Barato","Asa Norte","-15.747444929770044, -47.884365679050816","Le Classique/ Brioche de Parma/ Croissant"
 "Primo Grano","Pizza","Ótimo","Caro","Asa Norte","-15.745379565023043, -47.88700407207873","Pêra e Gorgonzola/ Caprese"
 "Primo Piato","Pizza","Ótimo","Barato","Asa Norte","-15.76318622424338, -47.88071808201563","Rodízio/ Peperoni/ Bacon"
-"Queen Place","Café","Ótimo","Caro","Asa Sul","-15.83418621453552, -47.91757263883662","Cafe do Rei"
+"Queen Place","Café","Ótimo","Caro","Asa Sul","-15.83418621453552, -47.91757263883662","Kings Breakfast"
 "Ricco Buguer","Hambúrguer","Bom","Caro","Asa Sul, Asa Norte","-15.811347999495242, -47.9011702336666",""
 "Rio Bistrô","Italiano","Bom","Preço Ok","Asa Sul","-15.813479125557434, -47.89041058630453","Risoto de Camarão"
 "Sal e Brasa","Churrasco/Parrilla","Ótimo","Preço Ok","Asa Norte","-15.789028735123088, -47.88574187532359","Rodizio"

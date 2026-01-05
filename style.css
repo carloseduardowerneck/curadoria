@@ -27,7 +27,7 @@
 ========================================================= */
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont,
-               "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background:
     radial-gradient(900px 600px at 20% 10%, rgba(122,162,255,0.25), transparent 50%),
     radial-gradient(700px 500px at 80% 20%, rgba(255,120,180,0.18), transparent 55%),
@@ -100,7 +100,6 @@ h1 {
   color: var(--muted);
 }
 
-/* dropdown legível */
 select option {
   color: #111;
   background: #fff;
@@ -163,14 +162,20 @@ select option {
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  min-height: 150px;
+  min-height: 180px; /* Aumentado levemente para acomodar o rodapé */
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
 }
 
 .card-inner {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  height: 100%; /* Garante que ocupe todo o card para o margin-top: auto funcionar */
+  gap: 12px;
 }
 
 .card-title {
@@ -187,14 +192,35 @@ select option {
 }
 
 /* =========================================================
-   BADGES
+   RODAPÉ DO CARD (Localização + Mapa)
 ========================================================= */
-.badges {
+.location-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto; /* Alinha no final do card */
+  padding-top: 8px;
 }
 
+.map-link {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 13px;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.map-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   BADGES
+========================================================= */
 .badge {
   padding: 4px 10px;
   font-size: 12px;
@@ -215,7 +241,7 @@ select option {
 }
 
 /* =========================================================
-   ESTADO VAZIO
+   ESTADO VAZIO / FOOTER / RESPONSIVO
 ========================================================= */
 .empty {
   margin: 30px 0;
@@ -225,13 +251,8 @@ select option {
   border: 1px solid var(--line);
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
-/* =========================================================
-   FOOTER
-========================================================= */
 .footer {
   padding: 30px 0 40px;
   text-align: center;
@@ -239,29 +260,13 @@ select option {
   font-size: 14px;
 }
 
-/* =========================================================
-   RESPONSIVO
-========================================================= */
 @media (max-width: 1000px) {
-  .controls {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .controls { grid-template-columns: 1fr 1fr; }
+  .grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 600px) {
-  .controls {
-    grid-template-columns: 1fr;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
-  h1 {
-    font-size: 26px;
-  }
+  .controls { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: 1fr; }
+  h1 { font-size: 26px; }
 }
