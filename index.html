@@ -1,74 +1,66 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Curadoria BSB</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curadoria Gastronômica BSB</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header class="container header">
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>Curadoria Gastronômica BSB</h1>
+                <p class="subtitle">Os melhores lugares de Brasília, selecionados a dedo.</p>
+            </div>
+            
+            <img src="https://images.unsplash.com/photo-1594403810058-005663784180?q=80&w=1200" alt="Brasília" class="hero">
+        </header>
 
-    <!-- IMAGEM DE BRASÍLIA -->
-    <img class="hero" src="img/bsb.jfif" alt="Brasília" />
+        <div class="price-legend">
+            <span class="legend-item">💰 <b>Barato:</b> 0-40</span>
+            <span class="legend-item">💰 <b>Preço Ok:</b> 40-80</span>
+            <span class="legend-item">💰 <b>Caro:</b> 80-120</span>
+            <span class="legend-item">💰 <b>Muito Caro:</b> 120+</span>
+        </div>
 
+        <div class="controls">
+            <input type="text" id="search" class="input" placeholder="Buscar por nome, prato ou lugar...">
+            
+            <select id="filter-category" class="select">
+                <option value="">Categoria: todas</option>
+            </select>
 
+            <select id="filter-region" class="select">
+                <option value="">Região: todas</option>
+            </select>
 
-    <div>
-      <h1>Curadoria BSB</h1>
-      <p class="subtitle">
-        Guia pessoal de lugares para comer e tomar café em Brasília. Caso tenha sugestões, envie para carloseduardowerneck1@gmail.com  
-      </p>
+            <select id="sort" class="select">
+                <option value="name-asc">Nome (A-Z)</option>
+                <option value="name-desc">Nome (Z-A)</option>
+            </select>
+
+            <button id="clear" class="button">Limpar</button>
+        </div>
+
+        <div class="meta">
+            <span id="status" class="status">Carregando base de dados...</span>
+            <span id="count" class="count"></span>
+        </div>
+
+        <main id="grid" class="grid">
+            </main>
+
+        <div id="empty" class="empty hidden">
+            <p>Nenhum lugar encontrado com esses filtros. Tente mudar a busca!</p>
+        </div>
+
+        <footer class="footer">
+            <p>&copy; 2024 Guia Gastronômico Brasília. Feito para quem ama a capital.</p>
+        </footer>
     </div>
 
-    <div class="controls">
-      <input id="search" class="input" type="search"
-             placeholder="Buscar por nome, bairro, comentário..." />
-
-      <select id="filter-category" class="select">
-        <option value="">Categoria: todas</option>
-      </select>
-
-      <select id="filter-region" class="select">
-        <option value="">Região/Bairro: todos</option>
-      </select>
-      <div class="price-legend">
-  <span class="legend-item">💰 <b>Barato:</b> 0-40</span>
-  <span class="legend-item">💰 <b>Preço Ok:</b> 40-80</span>
-  <span class="legend-item">💰 <b>Caro:</b> 80-120</span>
-  <span class="legend-item">💰 <b>Muito Caro:</b> 120+</span>
-</div>
-
-      <select id="sort" class="select">
-        <option value="name-asc">Ordenar: Nome (A–Z)</option>
-        <option value="name-desc">Ordenar: Nome (Z–A)</option>
-      </select>
-
-      <button id="clear" class="button">Limpar</button>
-    </div>
-
-  </header>
-
-  <main class="container">
-    <section class="meta">
-      <div id="status" class="status">Carregando base…</div>
-      <div id="count" class="count"></div>
-    </section>
-
-    <section id="grid" class="grid"></section>
-
-    <section id="empty" class="empty hidden">
-      <h2>Nenhum resultado</h2>
-      <p>Tente remover filtros ou buscar por outra palavra.</p>
-    </section>
-  </main>
-
-  <footer class="container footer">
-    <p>Curadoria pessoal </p>
-  </footer>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
-
