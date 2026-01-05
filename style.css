@@ -363,3 +363,29 @@ select option {
   gap: 8px;
 }
 
+@media (max-width: 768px) {
+  .price-legend {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .legend-items {
+    gap: 12px;
+  }
+  
+  .legend-item {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .legend-items {
+    gap: 10px;
+  }
+  
+  .price-legend {
+    padding: 12px 14px;
+  }
+}
+
