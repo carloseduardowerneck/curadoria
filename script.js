@@ -13,6 +13,7 @@ const elEmpty = document.getElementById("empty");
 const elSearch = document.getElementById("search");
 const elCat = document.getElementById("filter-category");
 const elReg = document.getElementById("filter-region");
+const elPrice = document.getElementById("filter-price"); // NOVO
 const elSort = document.getElementById("sort");
 const elClear = document.getElementById("clear");
 
@@ -104,7 +105,8 @@ const aliases = {
   region: ["bairro", "regiao", "região", "area", "localizacao", "localização"],
   desc: ["descricao", "descrição", "comentario", "dica", "recomendacoes de pratos", "recomendações de pratos"],
   maps: ["maps", "google maps", "mapa"],
-  coords: ["coordenadas", "coord", "latlng", "latitude"]
+  coords: ["coordenadas", "coord", "latlng", "latitude"],
+  price: ["preço", "preco", "faixa de preço", "valor", "custo", "price", "price range"] // NOVO
 };
 
 function findColumn(headers, key){
@@ -145,7 +147,8 @@ function buildModel(data){
     reg: findColumn(headers, "region"),
     desc: findColumn(headers, "desc"),
     maps: findColumn(headers, "maps"),
-    coords: findColumn(headers, "coords")
+    coords: findColumn(headers, "coords"),
+    price: findColumn(headers, "price") // NOVO
   };
 
   return data.map((r, idx) => {
@@ -157,11 +160,14 @@ function buildModel(data){
     const desc = pick(r, cols.desc);
     const coords = pick(r, cols.coords);
     const maps = pick(r, cols.maps);
-    const searchable = norm([name, category, regions.join(" "), desc].join(" "));
+    const price = pick(r, cols.price); // NOVO
+    const searchable = norm([name, category, regions.join(" "), desc, price].join(" ")); // Atualizado
 
-    return { name, category, regions, desc, maps, coords, searchable };
+    return { name, category, regions, desc, maps, coords, price, searchable }; // Atualizado
   });
 }
+
+
 
 // ---------- UI e Render ----------
 function fillSelect(selectEl, values, firstLabel){
@@ -193,11 +199,17 @@ function render(list){
     // Link do mapa (prioridade para coordenadas, depois link direto)
     const mapUrl = mapsFromCoords(item.coords) || safeLink(item.maps);
 
+    // Verifica se há preço para mostrar a badge
+    const priceBadge = item.price ? `<span class="badge price-badge">${escapeHtml(item.price)}</span>` : '';
+
     card.innerHTML = `
       <div class="card-inner">
         <div class="card-title">
           <h3 class="name">${escapeHtml(item.name)}</h3>
-          ${item.category ? `<span class="badge" style="background:var(--panel-strong); color:var(--text)">${escapeHtml(item.category)}</span>` : ''}
+          <div class="title-badges">
+            ${item.category ? `<span class="badge" style="background:var(--panel-strong); color:var(--text)">${escapeHtml(item.category)}</span>` : ''}
+            ${priceBadge}
+          </div>
         </div>
 
         <p class="desc">${escapeHtml(item.desc)}</p>
@@ -224,11 +236,13 @@ function apply(){
   const q = norm(elSearch.value);
   const cat = elCat.value;
   const reg = elReg.value;
+  const price = elPrice.value; // NOVO
 
   let filtered = rows.filter(r => {
     if(q && !r.searchable.includes(q)) return false;
     if(cat && r.category !== cat) return false;
     if(reg && !r.regions.includes(reg)) return false;
+    if(price && r.price !== price) return false; // NOVO
     return true;
   });
 
@@ -247,6 +261,10 @@ async function init(){
     rows = buildModel(data);
     fillSelect(elCat, Array.from(new Set(rows.map(r => r.category))).sort(), "Categoria: todas");
     fillSelect(elReg, Array.from(new Set(rows.flatMap(r => r.regions))).sort(), "Região: todas");
+    
+    // NOVO: Preencher filtro de preço
+    const priceValues = Array.from(new Set(rows.map(r => r.price).filter(p => p))).sort();
+    fillSelect(elPrice, priceValues, "Faixa de preço: todas");
 
     elStatus.textContent = "Base carregada ✅";
     apply();
@@ -258,10 +276,16 @@ async function init(){
 elSearch.addEventListener("input", apply);
 elCat.addEventListener("change", apply);
 elReg.addEventListener("change", apply);
+elPrice.addEventListener("change", apply); // NOVO
 elSort.addEventListener("change", apply);
 elClear.addEventListener("click", () => {
-  elSearch.value = ""; elCat.value = ""; elReg.value = ""; elSort.value = "name-asc";
+  elSearch.value = ""; 
+  elCat.value = ""; 
+  elReg.value = ""; 
+  elPrice.value = ""; // NOVO
+  elSort.value = "name-asc";
   apply();
 });
 
 init();
+
