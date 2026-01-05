@@ -18,6 +18,43 @@ const elRating = document.getElementById("filter-rating"); // NOVO
 const elSort = document.getElementById("sort");
 const elClear = document.getElementById("clear");
 
+// No início do arquivo, adicione um mapeamento de cores para categorias
+const categoryColors = {
+  'árabe': 'cat-arabe',
+  'asiatico': 'cat-asiatico',
+  'cachorro quente': 'cat-cachorro-quente',
+  'café': 'cat-cafe',
+  'churrasco/parrilla': 'cat-churrasco',
+  'frutos do mar': 'cat-frutos-mar',
+  'hambúrguer': 'cat-hamburguer',
+  'italiano': 'cat-italiano',
+  'mediterrâneo/gourmet': 'cat-mediterraneo',
+  'mexicano': 'cat-mexicano',
+  'pizza': 'cat-pizza',
+  'regional': 'cat-regional',
+  'comida dia a dia': 'cat-dia-a-dia'
+};
+
+
+
+
+// Função para obter a classe CSS de uma categoria
+function getCategoryClass(category) {
+  if (!category) return '';
+  
+  const normalizedCategory = norm(category);
+  
+  // Procura a chave correspondente
+  for (const [key, cssClass] of Object.entries(categoryColors)) {
+    if (normalizedCategory.includes(norm(key))) {
+      return cssClass;
+    }
+  }
+  
+  // Se não encontrar, cria uma classe genérica baseada no hash
+  return 'cat-generic';
+}
+
 // Dados carregados
 let rows = [];
 let view = [];
@@ -223,7 +260,6 @@ function fillSelect(selectEl, values, firstLabel){
 function escapeHtml(str){
   return String(str || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
-
 function render(list){
   elGrid.innerHTML = "";
   if(list.length === 0){
@@ -247,13 +283,17 @@ function render(list){
     // Determina a avaliação e cor
     const ratingInfo = getRatingClass(item.rating);
     const ratingBadge = item.rating ? `<span class="badge rating-badge ${ratingInfo.class}">${escapeHtml(ratingInfo.label)}</span>` : '';
+    
+    // Obtém a classe da categoria
+    const categoryClass = getCategoryClass(item.category);
+    const categoryBadge = item.category ? `<span class="badge ${categoryClass}">${escapeHtml(item.category)}</span>` : '';
 
     card.innerHTML = `
       <div class="card-inner">
         <div class="card-title">
           <h3 class="name">${escapeHtml(item.name)}</h3>
           <div class="title-badges">
-            ${item.category ? `<span class="badge" style="background:var(--panel-strong); color:var(--text)">${escapeHtml(item.category)}</span>` : ''}
+            ${categoryBadge}
             ${priceBadge}
             ${ratingBadge}
           </div>

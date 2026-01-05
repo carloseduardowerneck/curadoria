@@ -7,8 +7,9 @@
   padding: 0;
 }
 
+
 /* =========================================================
-   VARIÁVEIS DE TEMA
+   VARIÁVEIS DE TEMA (com cores de categorias)
 ========================================================= */
 :root {
   --bg: #0b0f19;
@@ -20,6 +21,32 @@
   --accent: #7aa2ff;
   --radius: 18px;
   --shadow: 0 10px 28px rgba(0,0,0,0.35);
+  
+  /* Cores para preços */
+  --barato: #10b981;
+  --ok: #fbbf24;
+  --caro: #f97316;
+  --muito-caro: #ef4444;
+  
+  /* Cores para avaliações */
+  --bom: #3b82f6;
+  --otimo: #8b5cf6;
+  --perfeito: #22c55e;
+  
+  /* Cores para categorias de comida */
+  --árabe: #d4af37;
+  --asiático: #bc1313;
+  --cachorro-quente: #ffcc00;
+  --café: #8b4513;
+  --churrasco: #b22222;
+  --frutos-mar: #006994;
+  --hambúrguer: #ff8c00;
+  --italiano: #009246;
+  --mediterrâneo: #40e0d0;
+  --mexicano: #008000;
+  --pizza: #dc143c;
+  --regional: #b8860b;
+  --dia-a-dia: #87ceeb;
 }
 
 /* =========================================================
@@ -314,7 +341,7 @@ select option {
    BADGES DE PREÇO COLORIDAS (CORES VIBRANTES)
 ========================================================= */
 .badge.price-badge.barato {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1)) !important;
+  background: linear-gradient(135deg, rgba(30, 185, 16, 0.2), rgba(16, 185, 30, 0.1)) !important;
   border-color: rgba(16, 185, 129, 0.4) !important;
   color: #10b981 !important;
   font-weight: 600;
@@ -322,7 +349,7 @@ select option {
 }
 
 .badge.price-badge.ok {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1)) !important;
+  background: linear-gradient(135deg, rgba(251, 190, 36, 0.781), rgba(251, 190, 36, 0.651)) !important;
   border-color: rgba(251, 191, 36, 0.4) !important;
   color: #fbbf24 !important;
   font-weight: 600;
@@ -330,7 +357,7 @@ select option {
 }
 
 .badge.price-badge.caro {
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(249, 115, 22, 0.1)) !important;
+  background: linear-gradient(135deg, rgba(249, 67, 22, 0.37), rgba(249, 105, 22, 0.384)) !important;
   border-color: rgba(249, 115, 22, 0.4) !important;
   color: #f97316 !important;
   font-weight: 600;
@@ -338,7 +365,7 @@ select option {
 }
 
 .badge.price-badge.muito-caro {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1)) !important;
+  background: linear-gradient(135deg, rgba(168, 10, 10, 0.747), rgba(141, 20, 20, 0.733)) !important;
   border-color: rgba(239, 68, 68, 0.4) !important;
   color: #ef4444 !important;
   font-weight: 600;
@@ -370,6 +397,124 @@ select option {
   color: #22c55e !important;
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);
+}
+
+/* =========================================================
+   BADGES DE CATEGORIA - CORES PARA TODAS AS CATEGORIAS
+========================================================= */
+
+/* Árabe - Dourado */
+.badge.cat-arabe {
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.705), rgba(139, 69, 19, 0.788)) !important;
+  border-color: rgba(255, 204, 0, 0.4) !important;
+  color: #ffcc00 !important;
+  font-weight: 600;
+}
+
+/* Asiático - Vermelho */
+.badge.cat-asiatico {
+  background: linear-gradient(135deg, rgba(188, 19, 19, 0.2), rgba(188, 19, 19, 0.1)) !important;
+  border-color: rgba(255, 204, 0, 0.4) !important;
+  color: #ffcc00 !important;
+  
+  font-weight: 600;
+}
+
+/* Cachorro Quente - Amarelo Mostarda */
+.badge.cat-cachorro-quente {
+  background: linear-gradient(135deg, rgba(255, 204, 0, 0.2), rgba(255, 204, 0, 0.1)) !important;
+  
+  border-color: rgba(188, 19, 19, 0.4) !important;
+  color: #bc1313 !important;
+  font-weight: 600;
+}
+
+/* Café - Marrom Café */
+.badge.cat-cafe {
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.2), rgba(139, 69, 19, 0.1)) !important;
+  border-color: rgba(139, 69, 19, 0.4) !important;
+  color: #8b4513 !important;
+  font-weight: 600;
+}
+
+/* Churrasco/Parrilla - Vermelho Carne */
+.badge.cat-churrasco {
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.2), rgba(139, 69, 19, 0.1)) !important;
+  border-color: rgba(139, 69, 19, 0.4) !important;
+  color: #b22222 !important;
+  font-weight: 600;
+}
+
+/* Frutos do Mar - Azul Marinho */
+.badge.cat-frutos-mar {
+  background: linear-gradient(135deg, rgba(0, 105, 148, 0.2), rgba(0, 105, 148, 0.1)) !important;
+  border-color: rgba(0, 105, 148, 0.4) !important;
+  color: #006994 !important;
+  font-weight: 600;
+}
+
+/* Hambúrguer - Laranja Queijo */
+.badge.cat-hamburguer {
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.2), rgba(255, 140, 0, 0.1)) !important;
+  border-color: rgba(255, 140, 0, 0.4) !important;
+  color: #ff8c00 !important;
+  font-weight: 600;
+}
+
+/* Italiano - Verde Italiano */
+.badge.cat-italiano {
+  background: linear-gradient(135deg, rgba(0, 146, 70, 0.2), rgba(0, 146, 70, 0.1)) !important;
+  border-color: rgba(0, 146, 70, 0.4) !important;
+  color: #009246 !important;
+  font-weight: 600;
+}
+
+/* Mediterrâneo/Gourmet - Azul Turquesa */
+.badge.cat-mediterraneo {
+  background: linear-gradient(135deg, rgba(64, 224, 208, 0.2), rgba(64, 224, 208, 0.1)) !important;
+  border-color: rgba(64, 224, 208, 0.4) !important;
+  color: #40e0d0 !important;
+  font-weight: 600;
+}
+
+/* Mexicano - Verde Mexicano */
+.badge.cat-mexicano {
+  background: linear-gradient(135deg, rgba(0, 128, 0, 0.2), rgba(0, 128, 0, 0.1)) !important;
+  border-color: rgba(0, 128, 0, 0.4) !important;
+  color: #008000 !important;
+  font-weight: 600;
+}
+
+/* Pizza - Vermelho Tomate */
+.badge.cat-pizza {
+  background: linear-gradient(135deg, rgba(220, 20, 60, 0.2), rgba(220, 20, 60, 0.1)) !important;
+  border-color: rgba(220, 20, 60, 0.4) !important;
+  color: #dc143c !important;
+  font-weight: 600;
+}
+
+/* Regional - Amarelo Terra */
+.badge.cat-regional {
+  background: linear-gradient(135deg, rgba(184, 134, 11, 0.2), rgba(184, 134, 11, 0.1)) !important;
+  border-color: rgba(184, 134, 11, 0.4) !important;
+  color: #b8860b !important;
+  font-weight: 600;
+}
+
+/* Comida Dia a Dia - Azul Claro */
+.badge.cat-dia-a-dia {
+  background: linear-gradient(135deg, rgba(135, 206, 235, 0.2), rgba(135, 206, 235, 0.1)) !important;
+  border-color: rgba(135, 206, 235, 0.4) !important;
+  color: #87ceeb !important;
+  font-weight: 600;
+}
+
+/* Categoria genérica (fallback) */
+.badge.cat-generic {
+  background: linear-gradient(135deg, rgba(122, 162, 255, 0.2), rgba(122, 162, 255, 0.1)) !important;
+  border-color: rgba(122, 162, 255, 0.4) !important;
+  color: #7aa2ff !important;
+  font-weight: 600;
 }
 
 /* =========================================================
@@ -598,3 +743,5 @@ select option {
     font-size: 10px;
   }
 }
+
+
