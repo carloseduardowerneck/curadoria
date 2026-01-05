@@ -13,7 +13,7 @@ const elEmpty = document.getElementById("empty");
 const elSearch = document.getElementById("search");
 const elCat = document.getElementById("filter-category");
 const elReg = document.getElementById("filter-region");
-const elPrice = document.getElementById("filter-price"); // NOVO
+const elPrice = document.getElementById("filter-price");
 const elSort = document.getElementById("sort");
 const elClear = document.getElementById("clear");
 
@@ -55,6 +55,30 @@ function detectRegions(text){
   if (t.includes("vila planalto")) regions.push("Vila Planalto");
 
   return Array.from(new Set(regions));
+}
+
+// ---------- função para classificar preços ----------
+function getPriceRange(priceStr) {
+  // Remove "R$", vírgulas e espaços
+  const cleanStr = String(priceStr || "").replace(/[R$\s,]/g, '').trim();
+  
+  // Tenta extrair um número
+  const match = cleanStr.match(/(\d+(?:\.\d+)?)/);
+  if (!match) return { range: 'indefinido', class: '', label: priceStr || '--' };
+  
+  const value = parseFloat(match[1]);
+  
+  if (value <= 40) return { range: 'barato', class: 'barato', label: `R$ ${value}` };
+  if (value <= 80) return { range: 'ok', class: 'ok', label: `R$ ${value}` };
+  if (value <= 120) return { range: 'caro', class: 'caro', label: `R$ ${value}` };
+  return { range: 'muito-caro', class: 'muito-caro', label: `R$ ${value}` };
+}
+
+// ---------- função para extrair valor numérico do preço ----------
+function extractPriceValue(priceStr) {
+  const cleanStr = String(priceStr || "").replace(/[R$\s,]/g, '').trim();
+  const match = cleanStr.match(/(\d+(?:\.\d+)?)/);
+  return match ? parseFloat(match[1]) : null;
 }
 
 // ---------- parser CSV robusto ----------
@@ -106,7 +130,7 @@ const aliases = {
   desc: ["descricao", "descrição", "comentario", "dica", "recomendacoes de pratos", "recomendações de pratos"],
   maps: ["maps", "google maps", "mapa"],
   coords: ["coordenadas", "coord", "latlng", "latitude"],
-  price: ["preço", "preco", "faixa de preço", "valor", "custo", "price", "price range"] // NOVO
+  price: ["preço", "preco", "faixa de preço", "valor", "custo", "price", "price range"]
 };
 
 function findColumn(headers, key){
@@ -148,7 +172,7 @@ function buildModel(data){
     desc: findColumn(headers, "desc"),
     maps: findColumn(headers, "maps"),
     coords: findColumn(headers, "coords"),
-    price: findColumn(headers, "price") // NOVO
+    price: findColumn(headers, "price")
   };
 
   return data.map((r, idx) => {
@@ -160,14 +184,16 @@ function buildModel(data){
     const desc = pick(r, cols.desc);
     const coords = pick(r, cols.coords);
     const maps = pick(r, cols.maps);
-    const price = pick(r, cols.price); // NOVO
-    const searchable = norm([name, category, regions.join(" "), desc, price].join(" ")); // Atualizado
+    const price = pick(r, cols.price);
+    
+    // Extrai valor numérico para ordenação futura
+    const priceValue = extractPriceValue(price);
+    
+    const searchable = norm([name, category, regions.join(" "), desc, price].join(" "));
 
-    return { name, category, regions, desc, maps, coords, price, searchable }; // Atualizado
+    return { name, category, regions, desc, maps, coords, price, priceValue, searchable };
   });
 }
-
-
 
 // ---------- UI e Render ----------
 function fillSelect(selectEl, values, firstLabel){
@@ -180,7 +206,7 @@ function fillSelect(selectEl, values, firstLabel){
 }
 
 function escapeHtml(str){
-  return String(str || "").replaceAll("&", "&").replaceAll("<", "<").replaceAll(">", ">");
+  return String(str || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
 function render(list){
@@ -198,9 +224,10 @@ function render(list){
 
     // Link do mapa (prioridade para coordenadas, depois link direto)
     const mapUrl = mapsFromCoords(item.coords) || safeLink(item.maps);
-
-    // Verifica se há preço para mostrar a badge
-    const priceBadge = item.price ? `<span class="badge price-badge">${escapeHtml(item.price)}</span>` : '';
+    
+    // Determina a faixa de preço e cor
+    const priceInfo = getPriceRange(item.price);
+    const priceBadge = item.price ? `<span class="badge price-badge ${priceInfo.class}">${escapeHtml(priceInfo.label)}</span>` : '';
 
     card.innerHTML = `
       <div class="card-inner">
@@ -236,13 +263,16 @@ function apply(){
   const q = norm(elSearch.value);
   const cat = elCat.value;
   const reg = elReg.value;
-  const price = elPrice.value; // NOVO
+  const priceRange = elPrice.value;
 
   let filtered = rows.filter(r => {
     if(q && !r.searchable.includes(q)) return false;
     if(cat && r.category !== cat) return false;
     if(reg && !r.regions.includes(reg)) return false;
-    if(price && r.price !== price) return false; // NOVO
+    if(priceRange) {
+      const priceInfo = getPriceRange(r.price);
+      if(priceInfo.range !== priceRange) return false;
+    }
     return true;
   });
 
@@ -262,9 +292,21 @@ async function init(){
     fillSelect(elCat, Array.from(new Set(rows.map(r => r.category))).sort(), "Categoria: todas");
     fillSelect(elReg, Array.from(new Set(rows.flatMap(r => r.regions))).sort(), "Região: todas");
     
-    // NOVO: Preencher filtro de preço
-    const priceValues = Array.from(new Set(rows.map(r => r.price).filter(p => p))).sort();
-    fillSelect(elPrice, priceValues, "Faixa de preço: todas");
+    // Preencher filtro de preço com as faixas
+    const priceOptions = [
+      {value: 'barato', label: 'Barato (0-40)'},
+      {value: 'ok', label: 'Preço OK (40-80)'},
+      {value: 'caro', label: 'Caro (80-120)'},
+      {value: 'muito-caro', label: 'Muito Caro (120+)'}
+    ];
+    
+    elPrice.innerHTML = '<option value="">Faixa de preço: todas</option>';
+    priceOptions.forEach(opt => {
+      const op = document.createElement("option");
+      op.value = opt.value;
+      op.textContent = opt.label;
+      elPrice.appendChild(op);
+    });
 
     elStatus.textContent = "Base carregada ✅";
     apply();
@@ -273,19 +315,20 @@ async function init(){
   }
 }
 
+// ---------- Event Listeners ----------
 elSearch.addEventListener("input", apply);
 elCat.addEventListener("change", apply);
 elReg.addEventListener("change", apply);
-elPrice.addEventListener("change", apply); // NOVO
+elPrice.addEventListener("change", apply);
 elSort.addEventListener("change", apply);
 elClear.addEventListener("click", () => {
   elSearch.value = ""; 
   elCat.value = ""; 
   elReg.value = ""; 
-  elPrice.value = ""; // NOVO
+  elPrice.value = "";
   elSort.value = "name-asc";
   apply();
 });
 
+// Inicializar
 init();
-
