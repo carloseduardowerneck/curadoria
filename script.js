@@ -1,5 +1,5 @@
 /***************************************************************
- * Curadoria BSB — site estático lendo CSV
+ * Curadoria BSB — Versão Completa com Preços e Mapa Unificado
  ***************************************************************/
 
 const CSV_PATH = "curadoria_bsb.csv";
@@ -29,7 +29,7 @@ function norm(s){
     .replace(/\p{Diacritic}/gu, "");
 }
 
-// ---------- detectar REGIÕES como TAGS (multi-label) ----------
+// ---------- detectar REGIÕES como TAGS ----------
 function detectRegions(text){
   const t = norm(text);
   const regions = [];
@@ -50,13 +50,13 @@ function detectRegions(text){
   if (t.includes("sobradinho")) regions.push("Sobradinho");
   if (t.includes("planaltina")) regions.push("Planaltina");
   if (t.includes("gama")) regions.push("Gama");
-  if (t.includes("plano piloto") || t === "plano piloto") regions.push("Plano Piloto");
+  if (t.includes("plano piloto")) regions.push("Plano Piloto");
   if (t.includes("vila planalto")) regions.push("Vila Planalto");
 
   return Array.from(new Set(regions));
 }
 
-// ---------- parser CSV robusto ----------
+// ---------- parser CSV ----------
 function detectDelimiter(text){
   const firstLine = text.split(/\r?\n/).find(l => l.trim().length > 0) || "";
   const commas = (firstLine.match(/,/g) || []).length;
@@ -99,10 +99,11 @@ function parseCSV(text){
 
 // ---------- mapeamento de colunas ----------
 const aliases = {
-  name: ["nome", "nome do local", "local", "lugar", "estabelecimento", "title"],
-  category: ["categoria", "tipo", "tipo de comida", "comida", "category"],
-  region: ["bairro", "regiao", "região", "area", "localizacao", "localização"],
-  desc: ["descricao", "descrição", "comentario", "dica", "recomendacoes de pratos", "recomendações de pratos"],
+  name: ["nome", "local", "lugar", "estabelecimento", "title"],
+  category: ["categoria", "tipo", "tipo de comida", "category"],
+  region: ["bairro", "regiao", "região", "area", "localização"],
+  desc: ["descricao", "descrição", "comentario", "dica", "recomendações de pratos"],
+  price: ["preço", "preco", "valor", "faixa de preço"],
   maps: ["maps", "google maps", "mapa"],
   coords: ["coordenadas", "coord", "latlng", "latitude"]
 };
@@ -144,6 +145,7 @@ function buildModel(data){
     cat: findColumn(headers, "category"),
     reg: findColumn(headers, "region"),
     desc: findColumn(headers, "desc"),
+    price: findColumn(headers, "price"),
     maps: findColumn(headers, "maps"),
     coords: findColumn(headers, "coords")
   };
@@ -155,11 +157,12 @@ function buildModel(data){
     const regionsDetected = detectRegions(regionRaw);
     const regions = (regionsDetected.length > 0) ? regionsDetected : (regionRaw ? [regionRaw] : []);
     const desc = pick(r, cols.desc);
+    const price = pick(r, cols.price);
     const coords = pick(r, cols.coords);
     const maps = pick(r, cols.maps);
-    const searchable = norm([name, category, regions.join(" "), desc].join(" "));
+    const searchable = norm([name, category, regions.join(" "), desc, price].join(" "));
 
-    return { name, category, regions, desc, maps, coords, searchable };
+    return { name, category, regions, desc, price, maps, coords, searchable };
   });
 }
 
@@ -190,14 +193,16 @@ function render(list){
     const card = document.createElement("article");
     card.className = "card";
 
-    // Link do mapa (prioridade para coordenadas, depois link direto)
     const mapUrl = mapsFromCoords(item.coords) || safeLink(item.maps);
 
     card.innerHTML = `
       <div class="card-inner">
         <div class="card-title">
           <h3 class="name">${escapeHtml(item.name)}</h3>
-          ${item.category ? `<span class="badge" style="background:var(--panel-strong); color:var(--text)">${escapeHtml(item.category)}</span>` : ''}
+          <div class="badges">
+            ${item.category ? `<span class="badge" style="background:var(--panel-strong)">${escapeHtml(item.category)}</span>` : ''}
+            ${item.price ? `<span class="badge badge-price">${escapeHtml(item.price)}</span>` : ''}
+          </div>
         </div>
 
         <p class="desc">${escapeHtml(item.desc)}</p>
@@ -219,7 +224,7 @@ function render(list){
   elCount.textContent = `${list.length} lugares exibidos`;
 }
 
-// ---------- Filtros e Init ----------
+// ---------- Filtros e Controle ----------
 function apply(){
   const q = norm(elSearch.value);
   const cat = elCat.value;
@@ -242,19 +247,26 @@ async function init(){
     const res = await fetch(CSV_PATH, { cache: "no-store" });
     const text = await res.text();
     const data = parseCSV(text);
-    if(data.length === 0) return;
+    if(data.length === 0) {
+        elStatus.textContent = "CSV vazio ou não encontrado.";
+        return;
+    }
 
     rows = buildModel(data);
-    fillSelect(elCat, Array.from(new Set(rows.map(r => r.category))).sort(), "Categoria: todas");
-    fillSelect(elReg, Array.from(new Set(rows.flatMap(r => r.regions))).sort(), "Região: todas");
+    
+    // Popular filtros
+    fillSelect(elCat, Array.from(new Set(rows.map(r => r.category))).filter(Boolean).sort(), "Categoria: todas");
+    fillSelect(elReg, Array.from(new Set(rows.flatMap(r => r.regions))).filter(Boolean).sort(), "Região: todas");
 
     elStatus.textContent = "Base carregada ✅";
     apply();
   } catch(err) {
-    elStatus.textContent = "Erro ao carregar dados.";
+    elStatus.textContent = "Erro ao carregar dados do CSV.";
+    console.error(err);
   }
 }
 
+// Eventos
 elSearch.addEventListener("input", apply);
 elCat.addEventListener("change", apply);
 elReg.addEventListener("change", apply);
