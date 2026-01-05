@@ -1,15 +1,7 @@
 /* =========================================================
-   RESET BÁSICO
+   RESET E VARIÁVEIS (Mantidos)
 ========================================================= */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* =========================================================
-   VARIÁVEIS DE TEMA
-========================================================= */
+* { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #0b0f19;
   --panel: rgba(255,255,255,0.06);
@@ -18,255 +10,81 @@
   --muted: rgba(255,255,255,0.65);
   --line: rgba(255,255,255,0.12);
   --accent: #7aa2ff;
+  --price-tag: #4ade80; /* Verde para o preço */
   --radius: 18px;
   --shadow: 0 10px 28px rgba(0,0,0,0.35);
 }
 
-/* =========================================================
-   BODY
-========================================================= */
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont,
-                "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background:
-    radial-gradient(900px 600px at 20% 10%, rgba(122,162,255,0.25), transparent 50%),
-    radial-gradient(700px 500px at 80% 20%, rgba(255,120,180,0.18), transparent 55%),
-    var(--bg);
+  font-family: system-ui, -apple-system, sans-serif;
+  background: radial-gradient(900px 600px at 20% 10%, rgba(122,162,255,0.25), transparent 50%), var(--bg);
   color: var(--text);
   min-height: 100vh;
 }
 
-/* =========================================================
-   CONTAINER
-========================================================= */
-.container {
-  width: min(1100px, calc(100% - 32px));
-  margin: 0 auto;
-}
+.container { width: min(1100px, calc(100% - 32px)); margin: 0 auto; }
 
 /* =========================================================
-   HEADER
+   LEGENDA DE PREÇOS (NOVO)
 ========================================================= */
-.header {
-  padding: 28px 0 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-h1 {
-  font-size: 32px;
-  font-weight: 700;
-}
-
-.subtitle {
-  color: var(--muted);
-  margin-top: 6px;
-}
-
-/* =========================================================
-   IMAGEM DO TOPO (BRASÍLIA)
-========================================================= */
-.hero {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-}
-
-/* =========================================================
-   CONTROLES (BUSCA E FILTROS)
-========================================================= */
-.controls {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
-  gap: 10px;
-}
-
-.input,
-.select {
-  width: 100%;
-  padding: 11px 14px;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  background: rgba(255,255,255,0.06);
-  color: var(--text);
-  font-size: 14px;
-}
-
-.input::placeholder {
-  color: var(--muted);
-}
-
-select option {
-  color: #111;
-  background: #fff;
-}
-
-.button {
-  padding: 11px 16px;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  background: var(--panel-strong);
-  color: var(--text);
-  cursor: pointer;
-}
-
-.button:hover {
-  background: rgba(255,255,255,0.18);
-}
-
-/* =========================================================
-   META (STATUS + CONTADOR)
-========================================================= */
-.meta {
-  margin: 18px 0;
-  padding: 12px 16px;
-  border-radius: var(--radius);
+.price-legend {
   background: var(--panel);
   border: 1px solid var(--line);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.status,
-.count {
-  color: var(--muted);
-  font-size: 14px;
-}
-
-/* =========================================================
-   GRID DE CARDS
-========================================================= */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding-bottom: 40px;
-}
-
-/* =========================================================
-   CARD
-========================================================= */
-.card {
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.10),
-    rgba(255,255,255,0.04)
-  );
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  min-height: 180px; /* Aumentado levemente para acomodar o rodapé */
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-}
-
-.card-inner {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  height: 100%; /* Garante que ocupe todo o card para o margin-top: auto funcionar */
-  gap: 12px;
-}
-
-.card-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.name {
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-/* =========================================================
-   RODAPÉ DO CARD (Localização + Mapa)
-========================================================= */
-.location-row {
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 20px;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: auto; /* Alinha no final do card */
-  padding-top: 8px;
-}
-
-.map-link {
-  color: var(--text);
-  text-decoration: none;
+  gap: 15px;
   font-size: 13px;
-  opacity: 0.7;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  color: var(--muted);
 }
+.legend-item b { color: var(--price-tag); }
 
-.map-link:hover {
-  opacity: 1;
-  text-decoration: underline;
+/* =========================================================
+   HEADER E CONTROLES
+========================================================= */
+.header { padding: 28px 0 18px; display: flex; flex-direction: column; gap: 16px; }
+.hero { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--line); }
+.controls { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr auto; gap: 10px; margin-top: 10px; }
+.input, .select, .button {
+  padding: 11px 14px; border-radius: 14px; border: 1px solid var(--line);
+  background: rgba(255,255,255,0.06); color: var(--text); font-size: 14px;
 }
 
 /* =========================================================
-   BADGES
+   CARDS
 ========================================================= */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding-bottom: 40px; }
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+  border: 1px solid var(--line); border-radius: var(--radius);
+  display: flex; flex-direction: column; min-height: 180px; transition: transform 0.2s;
+}
+.card:hover { transform: translateY(-4px); }
+.card-inner { padding: 16px; display: flex; flex-direction: column; height: 100%; gap: 12px; }
+
+.card-title { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.name { font-size: 18px; font-weight: 600; }
+
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
 .badge {
-  padding: 4px 10px;
-  font-size: 12px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid var(--line);
-  color: var(--muted);
-  white-space: nowrap;
+  padding: 4px 10px; font-size: 11px; border-radius: 999px;
+  background: rgba(255,255,255,0.10); border: 1px solid var(--line); color: var(--muted);
 }
 
-/* =========================================================
-   DESCRIÇÃO
-========================================================= */
-.desc {
-  font-size: 14px;
-  line-height: 1.4;
-  color: rgba(255,255,255,0.80);
+/* Tag de Preço em destaque */
+.badge-price {
+  color: var(--price-tag);
+  border-color: rgba(74, 222, 128, 0.3);
+  font-weight: 600;
 }
 
-/* =========================================================
-   ESTADO VAZIO / FOOTER / RESPONSIVO
-========================================================= */
-.empty {
-  margin: 30px 0;
-  padding: 20px;
-  border-radius: var(--radius);
-  background: var(--panel);
-  border: 1px solid var(--line);
-}
+.desc { font-size: 14px; line-height: 1.4; color: rgba(255,255,255,0.8); }
 
-.hidden { display: none; }
+.location-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; }
+.map-link { color: var(--text); text-decoration: none; font-size: 13px; opacity: 0.7; display: flex; align-items: center; gap: 4px; }
+.map-link:hover { opacity: 1; text-decoration: underline; }
 
-.footer {
-  padding: 30px 0 40px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-@media (max-width: 1000px) {
-  .controls { grid-template-columns: 1fr 1fr; }
-  .grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 600px) {
-  .controls { grid-template-columns: 1fr; }
-  .grid { grid-template-columns: 1fr; }
-  h1 { font-size: 26px; }
-}
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } .controls { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
