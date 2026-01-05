@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Curadoria BSB</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="container header">
+
+    <!-- IMAGEM DE BRASÍLIA -->
+    <img class="hero" src="img/bsb.jfif" alt="Brasília" />
+
+
+
+    <div>
+      <h1>Curadoria BSB</h1>
+      <p class="subtitle">
+        Guia pessoal de lugares para comer e tomar café em Brasília
+      </p>
+    </div>
+
+    <div class="controls">
+      <input id="search" class="input" type="search"
+             placeholder="Buscar por nome, bairro, comentário..." />
+
+      <select id="filter-category" class="select">
+        <option value="">Categoria: todas</option>
+      </select>
+
+      <select id="filter-region" class="select">
+        <option value="">Região/Bairro: todos</option>
+      </select>
+
+      <select id="sort" class="select">
+        <option value="name-asc">Ordenar: Nome (A–Z)</option>
+        <option value="name-desc">Ordenar: Nome (Z–A)</option>
+      </select>
+
+      <button id="clear" class="button">Limpar</button>
+    </div>
+
+  </header>
+
+  <main class="container">
+    <section class="meta">
+      <div id="status" class="status">Carregando base…</div>
+      <div id="count" class="count"></div>
+    </section>
+
+    <section id="grid" class="grid"></section>
+
+    <section id="empty" class="empty hidden">
+      <h2>Nenhum resultado</h2>
+      <p>Tente remover filtros ou buscar por outra palavra.</p>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <p>Curadoria pessoal • feita por você</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
