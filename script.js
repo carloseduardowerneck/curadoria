@@ -214,14 +214,28 @@ function render(list){
       ...it.regions.map(r=>`<span class="badge">${r}</span>`)
     ].filter(Boolean).join("");
 
-    card.innerHTML = `
-      <div class="card-inner">
-        <h3>${it.name}</h3>
-        <div class="badges">${badges}</div>
-        <p>${it.desc||""}</p>
-      </div>`;
-    elGrid.appendChild(card);
-  });
+  const cardHTML = `
+  <div class="card">
+    <div class="card-inner">
+      <div class="card-title">
+        <span class="name">${item.name}</span>
+        <span class="badge" style="background: var(--panel-strong)">${item.category}</span>
+      </div>
+      
+      <p class="desc">${item.desc || ""}</p>
+
+      <div class="location-row">
+        ${item.regions.map(r => `<span class="badge">${r}</span>`).join('')}
+        
+        <a href="https://www.google.com/maps/search/?api=1&query=${item.coords}" 
+           target="_blank" 
+           class="map-link">
+           📍 Ver no mapa
+        </a>
+      </div>
+    </div>
+  </div>
+`;
 
   elCount.textContent = `${list.length} lugares exibidos`;
 }
@@ -287,3 +301,4 @@ elClear.addEventListener("click", ()=>{
 });
 
 init();
+
