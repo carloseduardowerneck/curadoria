@@ -270,3 +270,20 @@ select option {
   .grid { grid-template-columns: 1fr; }
   h1 { font-size: 26px; }
 }
+
+/* =========================================================
+   BADGE DE PREÇO (cor diferente)
+========================================================= */
+.price-badge {
+  background: rgba(255, 215, 0, 0.15) !important;
+  border-color: rgba(255, 215, 0, 0.3) !important;
+  color: #ffd700 !important;
+}
+
+/* =========================================================
+   TÍTULO DO CARD COM MULTIPLAS BADGES
+========================================================= */
+.title-badges {
+  display: flex;
+  gap: 8px;
+}
