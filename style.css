@@ -260,6 +260,81 @@ select option {
   font-size: 14px;
 }
 
+/* =========================================================
+   LEGENDA DE PREÇOS
+========================================================= */
+.price-legend {
+  margin-top: 8px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-title {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.legend-items {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.legend-label {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* =========================================================
+   BADGES DE PREÇO COLORIDAS
+========================================================= */
+.price-badge.barato {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #10b981 !important;
+}
+
+.price-badge.ok {
+  background: rgba(251, 191, 36, 0.15) !important;
+  border-color: rgba(251, 191, 36, 0.3) !important;
+  color: #fbbf24 !important;
+}
+
+.price-badge.caro {
+  background: rgba(249, 115, 22, 0.15) !important;
+  border-color: rgba(249, 115, 22, 0.3) !important;
+  color: #f97316 !important;
+}
+
+.price-badge.muito-caro {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #ef4444 !important;
+}
+
 @media (max-width: 1000px) {
   .controls { grid-template-columns: 1fr 1fr; }
   .grid { grid-template-columns: repeat(2, 1fr); }
@@ -287,3 +362,4 @@ select option {
   display: flex;
   gap: 8px;
 }
+
