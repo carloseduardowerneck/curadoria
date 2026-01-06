@@ -77,7 +77,7 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "Primo Grano","Pizza","Ótimo","Caro","Asa Norte","https://www.google.com/maps/search/?api=1&query=Primo%20Grano%20Asa%20Norte%20Brasilia","Minha Sugestão: Pêra e Gorgonzola/ Caprese"
 "Primo Piato","Pizza","Ótimo","Barato","Asa Norte","https://www.google.com/maps/search/?api=1&query=Primo%20Piato%20Asa%20Norte%20Brasilia","Minha Sugestão: Rodízio/ Peperoni/ Bacon"
 "Queen Place","Café","Ótimo","Caro","Asa Sul","https://www.google.com/maps/search/?api=1&query=Queen%20Place%20Asa%20Sul%20Brasilia","Minha Sugestão: Kings Breakfast"
-"Restaurante Dom João" , "Dia a Dia", "Ótimo", "Barato", "Asa Norte", "https://maps.app.goo.gl/baM89xdkoUoaeAfq5", "Minha Sugestão: Montar o Seu"
+"Restaurante Dom João" , "Comida Dia a Dia", "Ótimo", "Barato", "Asa Norte", "https://maps.app.goo.gl/baM89xdkoUoaeAfq5", "Minha Sugestão: Montar o Seu"
 "Ricco Buguer","Hambúrguer","Bom","Caro","Asa Sul, Asa Norte","https://www.google.com/maps/search/?api=1&query=Ricco%20Buguer%20Asa%20Sul,%20Asa%20Norte%20Brasilia","Minha Sugestão: "
 "Rio Bistrô","Italiano","Bom","Preço Ok","Asa Sul","https://www.google.com/maps/search/?api=1&query=Rio%20Bistr%C3%B4%20Asa%20Sul%20Brasilia","Minha Sugestão: Risoto de Camarão"
 "Sal e Brasa","Churrasco/Parrilla","Ótimo","Preço Ok","Asa Norte","https://www.google.com/maps/search/?api=1&query=Sal%20e%20Brasa%20Asa%20Norte%20Brasilia","Minha Sugestão: Rodizio"
@@ -98,5 +98,6 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "Xique-Xique","Regional","Ótimo","Preço Ok","Asa Norte","https://www.google.com/maps/search/?api=1&query=Xique-Xique%20Asa%20Norte%20Brasilia","Minha Sugestão: Combo Completo"
 "Vamos Queridos","Árabe","Ótimo","Barato","Sudoeste","https://www.google.com/maps/search/?api=1&query=Yalla%20Habib%20Sudoeste%20Brasilia","Minha Sugestão: Shawarma de Frango"
 "Zimbrus","Comida Dia a Dia","Ótimo","Barato","Asa Sul","https://www.google.com/maps/search/?api=1&query=Zimbrus%20Asa%20Sul%20Brasilia","Minha Sugestão: Peixe Empanado/ Coxa e Sobrecoxa/ Montar Salada"
+
 
 
