@@ -81,7 +81,7 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "Ricco Buguer","Hambúrguer","Bom","Caro","Asa Sul, Asa Norte","https://www.google.com/maps/search/?api=1&query=Ricco%20Buguer%20Asa%20Sul,%20Asa%20Norte%20Brasilia","Minha Sugestão: Ricco Bacon"
 "Rio Bistrô","Italiano","Bom","Preço Ok","Asa Sul","https://www.google.com/maps/search/?api=1&query=Rio%20Bistr%C3%B4%20Asa%20Sul%20Brasilia","Minha Sugestão: Risoto de Camarão"
 "Sal e Brasa","Churrasco/Parrilla","Ótimo","Preço Ok","Asa Norte","https://www.google.com/maps/search/?api=1&query=Sal%20e%20Brasa%20Asa%20Norte%20Brasilia","Minha Sugestão: Rodizio"
-"Same Same","Asiático","Bom","Caro","Asa Sul","https://www.google.com/maps/search/?api=1&query=Same%20Same%20Asa%20Sul%20Brasilia","Minha Sugestão: Pad Thai"
+"Same Same","Asiático","Bom","Caro","Asa Sul","https://www.google.com/maps/search/?api=1&query=Same%20Same%20Asa%20Sul%20Brasilia","Minha Sugestão: Pad Thai/ Satay"
 "Santé","Mediterrâneo/Gourmet","Ótimo","Muito Caro","Asa Norte, Lago Sul","https://www.google.com/maps/search/?api=1&query=Sant%C3%A9%20Asa%20Norte,%20Lago%20Sul%20Brasilia","Minha Sugestão: Filé com Mandioca"
 "Soban","Asiático","Ótimo","Preço Ok","Asa Sul","https://www.google.com/maps/search/?api=1&query=Soban%20Asa%20Sul%20Brasilia","Minha Sugestão: Frango Karaague/ Churrasco Coreano"
 "Solo","Italiano","Ainda Não Fui","","Asa Sul","https://www.google.com/maps/search/?api=1&query=Solo%20Asa%20Sul%20Brasilia","Minha Sugestão: "
@@ -98,6 +98,7 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "Xique-Xique","Regional","Ótimo","Preço Ok","Asa Norte","https://www.google.com/maps/search/?api=1&query=Xique-Xique%20Asa%20Norte%20Brasilia","Minha Sugestão: Combo Completo"
 "Vamos Queridos","Árabe","Ótimo","Barato","Sudoeste","https://www.google.com/maps/search/?api=1&query=Yalla%20Habib%20Sudoeste%20Brasilia","Minha Sugestão: Shawarma de Frango"
 "Zimbrus","Comida Dia a Dia","Ótimo","Barato","Asa Sul","https://www.google.com/maps/search/?api=1&query=Zimbrus%20Asa%20Sul%20Brasilia","Minha Sugestão: Peixe Empanado/ Coxa e Sobrecoxa/ Montar Salada"
+
 
 
 
