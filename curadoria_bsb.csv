@@ -32,6 +32,7 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "Clandestino","Café","Bom","Preço Ok","Asa Norte","https://www.google.com/maps/search/?api=1&query=Clandestino%20Asa%20Norte%20Brasilia","Minha Sugestão: Toast Avocado"
 "Confraria do Camarão","Frutos do Mar","Ótimo","Caro","Asa Sul","https://www.google.com/maps/search/?api=1&query=Confraria%20do%20Camar%C3%A3o%20Asa%20Sul%20Brasilia","Minha Sugestão: Camarão Thai"
 "Da Rô Restaurante","Comida Dia a Dia","Bom","Preço Ok","Asa Norte","https://www.google.com/maps/search/?api=1&query=Da%20R%C3%B4%20Restaurante%20Asa%20Norte%20Brasilia","Minha Sugestão: Montar o Seu"
+"Crema Di Latte", "Café", "Ótimo", "Preço Ok", "Asa Norte", "https://share.google/3ErdTIbINM6jGf2TB", "Minha Sugestão: Limão/ Snickers/ Coco com Whey e Creatina (Sem Açúcar)"
 "Dog da Igrejinha","Cachorro Quente","Ótimo","Barato","Asa Sul, Asa Norte","https://www.google.com/maps/search/?api=1&query=Dog%20da%20Igrejinha%20Asa%20Sul,%20Asa%20Norte%20Brasilia","Minha Sugestão: Chapa Dupla"
 "Dog do Bartô","Cachorro Quente","Bom","Barato","Asa Norte","https://www.google.com/maps/search/?api=1&query=Dog%20do%20Bart%C3%B4%20Asa%20Norte%20Brasilia","Minha Sugestão: Duplo"
 "Domaine","Italiano","Ótimo","Caro","Asa Sul","https://www.google.com/maps/search/?api=1&query=Domaine%20Asa%20Sul%20Brasilia","Minha Sugestão: Risoto com File e Rapadura"
@@ -47,6 +48,7 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "Fuego Alma Vino","Churrasco/Parrilla","Perfeito","Muito Caro","Asa Sul","https://www.google.com/maps/search/?api=1&query=Fuego%20Alma%20Vino%20Asa%20Sul%20Brasilia","Minha Sugestão: Contra File / Ancho/ Bife Vazio"
 "Galeteria Serrana","Comida Dia a Dia","Bom","Barato","Asa Norte","https://www.google.com/maps/search/?api=1&query=Galeteria%20Serrana%20Asa%20Norte%20Brasilia","Minha Sugestão: Marmita com Galeto"
 "Geleia/Concorrente","Hambúrguer","Bom","Preço Ok","Asa Sul, Asa Norte","https://www.google.com/maps/search/?api=1&query=Geleia/Concorrente%20Asa%20Sul,%20Asa%20Norte%20Brasilia","Minha Sugestão: Lago Sul"
+"Ilgiorno", "Café", "Bom", "Preço Ok", "Asa Norte", "https://share.google/XqjXBc6YuD2c3VSHe", "Minha Sugestão: Brunch Americano/ Tapioca Carne Seca/ Croissant Ao Pesto/ Panqueca Doce de Leite"
 "Italianíssimo","Italiano","Perfeito","Muito Caro","Asa Norte","https://www.google.com/maps/search/?api=1&query=Italian%C3%ADssimo%20Asa%20Norte%20Brasilia","Minha Sugestão: Filleto In Crosta"
 "IVV Swine Bar","Mediterrâneo/Gourmet","Perfeito","Muito Caro","Asa Norte","https://www.google.com/maps/search/?api=1&query=IVV%20Swine%20Bar%20Asa%20Norte%20Brasilia","Minha Sugestão: Bruscheta"
 "Izzi Wine Garden","Mediterrâneo/Gourmet","Ainda Não Fui","","Lago Sul","https://www.google.com/maps/search/?api=1&query=Izzi%20Wine%20Garden%20Lago%20Sul%20Brasilia","Minha Sugestão: "
@@ -74,8 +76,9 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "Ouriço","Frutos do Mar","Perfeito","Caro","Asa Sul","https://www.google.com/maps/search/?api=1&query=Ouri%C3%A7o%20Asa%20Sul%20Brasilia","Minha Sugestão: Bobó de Camarão/ Risoto de Camarão"
 "Padaria Cinco Estrelas","Café","Bom","Barato","Asa Sul, Noroeste","https://www.google.com/maps/search/?api=1&query=Padaria%20Cinco%20Estrelas%20Asa%20Sul,%20Noroeste%20Brasilia","Minha Sugestão: Tapioca Carne com Queijo Coalho"
 "Padaria Francesa","Café","Ótimo","Barato","Asa Norte","https://www.google.com/maps/search/?api=1&query=Padaria%20Francesa%20Asa%20Norte%20Brasilia","Minha Sugestão: Le Classique/ Brioche de Parma/ Croissant"
+"Più Bella", "Café", "Ótimo", "Preço Ok", "Asa Sul", "https://share.google/4YoJB8nW5rFvr3tRT", "Minha Sugestão: Panettone, Pipoca, Avelâ, Bolo de Laranja"
 "Primo Grano","Pizza","Ótimo","Caro","Asa Norte","https://www.google.com/maps/search/?api=1&query=Primo%20Grano%20Asa%20Norte%20Brasilia","Minha Sugestão: Pêra e Gorgonzola/ Caprese"
-"Primo Piato","Pizza","Ótimo","Barato","Asa Norte","https://www.google.com/maps/search/?api=1&query=Primo%20Piato%20Asa%20Norte%20Brasilia","Minha Sugestão: Rodízio/ Peperoni/ Bacon"
+"Primo Piato","Pizza","Bom","Barato","Asa Norte","https://www.google.com/maps/search/?api=1&query=Primo%20Piato%20Asa%20Norte%20Brasilia","Minha Sugestão: Rodízio/ Peperoni/ Bacon"
 "Queen Place","Café","Ótimo","Caro","Asa Sul","https://www.google.com/maps/search/?api=1&query=Queen%20Place%20Asa%20Sul%20Brasilia","Minha Sugestão: Kings Breakfast"
 "Restaurante Dom João" , "Comida Dia a Dia", "Ótimo", "Barato", "Asa Norte", "https://maps.app.goo.gl/baM89xdkoUoaeAfq5", "Minha Sugestão: Montar o Seu"
 "Ricco Buguer","Hambúrguer","Bom","Caro","Asa Sul, Asa Norte","https://www.google.com/maps/search/?api=1&query=Ricco%20Buguer%20Asa%20Sul,%20Asa%20Norte%20Brasilia","Minha Sugestão: Ricco Bacon"
@@ -98,6 +101,7 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "Xique-Xique","Regional","Ótimo","Preço Ok","Asa Norte","https://www.google.com/maps/search/?api=1&query=Xique-Xique%20Asa%20Norte%20Brasilia","Minha Sugestão: Combo Completo"
 "Vamos Queridos","Árabe","Ótimo","Barato","Sudoeste","https://www.google.com/maps/search/?api=1&query=Yalla%20Habib%20Sudoeste%20Brasilia","Minha Sugestão: Shawarma de Frango"
 "Zimbrus","Comida Dia a Dia","Ótimo","Barato","Asa Sul","https://www.google.com/maps/search/?api=1&query=Zimbrus%20Asa%20Sul%20Brasilia","Minha Sugestão: Peixe Empanado/ Coxa e Sobrecoxa/ Montar Salada"
+
 
 
 
