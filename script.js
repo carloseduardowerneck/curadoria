@@ -23,7 +23,7 @@ const categoryColors = {
   'árabe': 'cat-arabe',
   'asiatico': 'cat-asiatico',
   'cachorro quente': 'cat-cachorro-quente',
-  'café': 'cat-cafe',
+  'café/doceria': 'cat-cafe',
   'churrasco/parrilla': 'cat-churrasco',
   'frutos do mar': 'cat-frutos-mar',
   'hambúrguer': 'cat-hamburguer',
@@ -519,3 +519,4 @@ elClear.addEventListener("click", () => {
 
 // Inicializar
 init();
+
