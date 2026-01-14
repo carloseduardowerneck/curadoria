@@ -37,7 +37,7 @@
   --árabe: #d4af37;
   --asiático: #bc1313;
   --cachorro-quente: #ffcc00;
-  --café: #8b4513;
+  --café/doceria: #8b4513;
   --churrasco: #b22222;
   --frutos-mar: #006994;
   --hambúrguer: #ff8c00;
@@ -429,7 +429,7 @@ select option {
   font-weight: 600;
 }
 
-/* Café - Marrom Café */
+/* Café/Doceria - Marrom Café */
 .badge.cat-cafe {
   background: linear-gradient(135deg, rgba(139, 69, 19, 0.2), rgba(139, 69, 19, 0.1)) !important;
   border-color: rgba(139, 69, 19, 0.4) !important;
@@ -743,5 +743,6 @@ select option {
     font-size: 10px;
   }
 }
+
 
 
