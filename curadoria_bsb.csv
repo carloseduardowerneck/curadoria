@@ -94,6 +94,7 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "SuperQuadra","Churrasco/Parrilla","Bom","Preço Ok","Asa Norte","https://www.google.com/maps/search/?api=1&query=SuperQuadra%20Asa%20Norte%20Brasilia","Minha Sugestão: Arroz de Costela"
 "Taikan","Asiático","Bom","Preço Ok","Asa Norte, Asa Sul","https://www.google.com/maps/search/?api=1&query=Taikan%20Asa%20Norte,%20Asa%20Sul%20Brasilia","Minha Sugestão: Montar o Seu"
 "Taypá","Asiático","Perfeito","Muito Caro","Lago Sul","https://www.google.com/maps/search/?api=1&query=Tayp%C3%A1%20Lago%20Sul%20Brasilia","Minha Sugestão: Ceviche/ Pato Assado/ Ossobuco"
+"The Black Beef", "Hambúrguer", "Ótimo", "Preço Ok", "Asa Norte, Asa Sul", "https://share.google/RuZOGIFFSt9cg9PWu", "Minha Sugestão: Black Rib/ Black Chicken"
 "Valentina","Pizza","Perfeito","Caro","Asa Norte, Asa Sul","https://www.google.com/maps/search/?api=1&query=Valentina%20Asa%20Norte,%20Asa%20Sul%20Brasilia","Minha Sugestão: Camarão com Mel/ Bacon with Rapadura/ Toscana"
 "Varanda do Sul","Comida Dia a Dia","Ótimo","Preço Ok","Asa Norte, Asa Sul","https://www.google.com/maps/search/?api=1&query=Varanda%20do%20Sul%20Asa%20Norte,%20Asa%20Sul%20Brasilia","Minha Sugestão: Montar o Seu"
 "Verona","Italiano","Ainda Não Fui","","Asa Sul","https://www.google.com/maps/search/?api=1&query=Verona%20Asa%20Sul%20Brasilia","Minha Sugestão: "
@@ -101,6 +102,7 @@ Nome do Local,Tipo de Comida,Avaliação,Preço,Localização,Maps Link,Recomend
 "Xique-Xique","Regional","Ótimo","Preço Ok","Asa Norte","https://www.google.com/maps/search/?api=1&query=Xique-Xique%20Asa%20Norte%20Brasilia","Minha Sugestão: Combo Completo"
 "Vamos Queridos","Árabe","Ótimo","Barato","Sudoeste","https://www.google.com/maps/search/?api=1&query=Yalla%20Habib%20Sudoeste%20Brasilia","Minha Sugestão: Shawarma de Frango"
 "Zimbrus","Comida Dia a Dia","Ótimo","Barato","Asa Sul","https://www.google.com/maps/search/?api=1&query=Zimbrus%20Asa%20Sul%20Brasilia","Minha Sugestão: Peixe Empanado/ Coxa e Sobrecoxa/ Montar Salada"
+
 
 
 
