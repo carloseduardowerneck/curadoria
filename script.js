@@ -249,19 +249,19 @@ function buildModel(data) {
 const FEATURED_PICKS = [
   {
     nameMatch: "cafezin",
-    why: "Atendimento impecável, comida deliciosa e preço abaixo do mercado em Brasília. Daqueles lugares que você descobre e quer guardar pra si.",
+    why: "Atendimento impecável, comida deliciosa e preço bacana. Daqueles lugares que você descobre e quer guardar pra si.",
   },
   {
     nameMatch: "nazo",
-    why: "Sushi sério e rodízio inovador, num ambiente que faz parte da experiência. Vai com fome, sai com história pra contar.",
+    why: "Sushi sério e rodízio show de bola. Recomendação principal pros amigos de fora de Brasília. Vai com fome, sai com história pra contar.",
   },
   {
-    nameMatch: "fuego",
-    why: "Carnes excelentes, acompanhamentos no mesmo nível, e atendimento que te faz pedir (e amar) cortes que você nem conhecia.",
+    nameMatch: "italianissimo",
+    why: "Comida Italiana impecável, com pratos muito bem feitos (e bem servidos). Ótimo para levar alguém que você queira impressionar.",
   },
   {
     nameMatch: "bsb grill",
-    why: "Mesmo espírito do Fuego, outra casa: te apresentam cortes que quebram preconceito. Cada visita ensina algo sobre churrasco.",
+    why: "Carnes excelentes, acompanhamentos no mesmo nível, e atendimento que te faz amigo dos garçons. Cada visita ensina algo sobre churrasco.",
   }
 ];
 
