@@ -3,86 +3,146 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Curadoria BSB</title>
+  <title>Curadoria BSB — Guia pessoal de Brasília</title>
+  <meta name="description" content="Onde comer e tomar café em Brasília, segundo Carlos. Curadoria pessoal de 110+ lugares testados." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <header class="container header">
-
-    <!-- IMAGEM DE BRASÍLIA -->
-    <img class="hero" src="img/bsb.jfif" alt="Brasília" />
-
-
-
-    <div>
-      <h1>Curadoria BSB</h1>
-      <p class="subtitle">
-        Guia pessoal de lugares para comer e tomar café em Brasília. Caso tenha sugestões, envie para carloseduardowerneck1@gmail.com  
+  <!-- ============== HERO ============== -->
+  <header class="hero">
+    <div class="hero__bg" aria-hidden="true"></div>
+    <div class="hero__inner container">
+      <div class="hero__eyebrow">
+        <span class="dot"></span>
+        Curadoria pessoal · Brasília
+      </div>
+      <h1 class="hero__title">
+        Onde comer<br />
+        <em>(e tomar café)</em><br />
+        em Brasília.
+      </h1>
+      <p class="hero__lede">
+        Um guia honesto dos lugares que eu volto, dos que vale a pena conhecer, e
+        dos que eu ainda quero testar. Sem propaganda, sem ranking de algoritmo —
+        só o que eu de fato gosto.
       </p>
+      <div class="hero__meta">
+        <span><strong id="hero-count">—</strong> lugares</span>
+        <span class="hero__divider"></span>
+        <span>Atualizado constantemente</span>
+        <span class="hero__divider"></span>
+        <a href="mailto:carloseduardowerneck1@gmail.com">Sugerir um lugar →</a>
+      </div>
     </div>
-
-    <div class="controls">
-      <input id="search" class="input" type="search"
-             placeholder="Buscar por nome, bairro, comentário..." />
-
-      <select id="filter-category" class="select">
-        <option value="">Categoria: todas</option>
-      </select>
-
-      <select id="filter-region" class="select">
-        <option value="">Região/Bairro: todos</option>
-      </select>
-
-<!-- NOVO FILTRO DE AVALIAÇÃO -->
-<select id="filter-rating" class="select">
-  <option value="">Avaliação: todas</option>
-</select>
-
-
-     <!-- NOVO FILTRO DE PREÇO -->
-  <select id="filter-price" class="select">
-    <option value="">Faixa de preço: todas</option>
-  </select>
-
-      <select id="sort" class="select">
-        <option value="name-asc">Ordenar: Nome (A–Z)</option>
-        <option value="name-desc">Ordenar: Nome (Z–A)</option>
-      </select>
-
-      <button id="clear" class="button">Limpar</button>
-    </div>
-
   </header>
 
+  <!-- ============== INTRO / VOICE ============== -->
+  <section class="intro container">
+    <div class="intro__rule"></div>
+    <div class="intro__grid">
+      <h2 class="intro__heading">O que você vai encontrar aqui</h2>
+      <div class="intro__body">
+        <p>
+          Eu moro em Brasília e como fora com frequência. Ao longo dos anos fui
+          juntando uma lista mental dos lugares que valiam a pena — e cansei de
+          mandar áudio toda vez que alguém pedia recomendação. Daí esse guia.
+        </p>
+        <p>
+          Não é uma lista de tudo. É <em>o que eu gosto</em>. Cada lugar tem
+          minha avaliação (de <span class="pip pip--bom">Bom</span> a
+          <span class="pip pip--perfeito">Perfeito</span>) e o prato que eu
+          pediria se você me chamasse pra ir junto agora.
+        </p>
+      </div>
+    </div>
+  </section>
 
-  <main class="container">
-    <section class="meta">
-      <div id="status" class="status">Carregando base…</div>
-      <div id="count" class="count"></div>
-    </section>
+  <!-- ============== FEATURED PICKS ============== -->
+  <section class="featured container" id="featured">
+    <div class="section-head">
+      <span class="section-head__kicker">Os indispensáveis</span>
+      <h2 class="section-head__title">Onde eu sempre volto</h2>
+      <p class="section-head__sub">Quatro lugares que resumem o que essa lista é. Se você só puder ir em quatro endereços, comece por aqui.</p>
+    </div>
+    <div class="featured__grid" id="featured-grid"></div>
+  </section>
 
-    <section id="grid" class="grid"></section>
+  <!-- ============== EXPLORE ============== -->
+  <section class="explore container" id="explore">
+    <div class="section-head">
+      <span class="section-head__kicker">A lista completa</span>
+      <h2 class="section-head__title">Explorar todos os lugares</h2>
+    </div>
 
-    <section id="empty" class="empty hidden">
-      <h2>Nenhum resultado</h2>
-      <p>Tente remover filtros ou buscar por outra palavra.</p>
-    </section>
-  </main>
+    <div class="filters">
+      <div class="filters__search">
+        <svg class="filters__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="search" class="filters__input" type="search"
+               placeholder="Buscar por nome, prato, bairro..." />
+      </div>
 
-  <footer class="container footer">
-    <p>Curadoria pessoal </p>
+      <div class="filters__row">
+        <div class="filters__group" id="filter-categories" role="tablist" aria-label="Categoria">
+          <!-- pills injected by JS -->
+        </div>
+      </div>
+
+      <div class="filters__row filters__row--selects">
+        <select id="filter-region" class="filters__select" aria-label="Região">
+          <option value="">Todas as regiões</option>
+        </select>
+        <select id="filter-rating" class="filters__select" aria-label="Avaliação">
+          <option value="">Qualquer avaliação</option>
+        </select>
+        <select id="filter-price" class="filters__select" aria-label="Faixa de preço">
+          <option value="">Qualquer preço</option>
+        </select>
+        <select id="sort" class="filters__select" aria-label="Ordenação">
+          <option value="rating-desc">Melhor avaliados primeiro</option>
+          <option value="name-asc">Nome (A–Z)</option>
+          <option value="name-desc">Nome (Z–A)</option>
+        </select>
+        <button id="clear" class="filters__clear" type="button">Limpar</button>
+      </div>
+    </div>
+
+    <div class="explore__meta">
+      <span id="status" class="status">Carregando…</span>
+      <span id="count" class="count"></span>
+    </div>
+
+    <div id="grid" class="cards"></div>
+
+    <div id="empty" class="empty hidden">
+      <h3>Nada encontrado por aqui</h3>
+      <p>Tente outra palavra, ou limpe os filtros.</p>
+    </div>
+  </section>
+
+  <!-- ============== FOOTER ============== -->
+  <footer class="footer container">
+    <div class="footer__rule"></div>
+    <div class="footer__inner">
+      <div>
+        <div class="footer__brand">Curadoria BSB</div>
+        <p class="footer__tag">Um projeto pessoal. Sem patrocínio, sem afiliação, sem hype.</p>
+      </div>
+      <div class="footer__contact">
+        <p>Achou um lugar que merece entrar? Discorda de uma avaliação?</p>
+        <a href="mailto:carloseduardowerneck1@gmail.com" class="footer__email">carloseduardowerneck1@gmail.com</a>
+      </div>
+    </div>
   </footer>
 
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
