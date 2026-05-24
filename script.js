@@ -1,45 +1,30 @@
-/***************************************************************
- * Curadoria BSB — site estático lendo CSV
- ***************************************************************/
+/* =========================================================
+ * Curadoria BSB — script
+ * Mantém parser CSV original; adapta render para layout editorial.
+ * ========================================================= */
 
 const CSV_PATH = "curadoria_bsb.csv";
 
-// Elementos do DOM
-const elGrid = document.getElementById("grid");
-const elStatus = document.getElementById("status");
-const elCount = document.getElementById("count");
-const elEmpty = document.getElementById("empty");
+/* ---------- DOM ---------- */
+const elGrid    = document.getElementById("grid");
+const elStatus  = document.getElementById("status");
+const elCount   = document.getElementById("count");
+const elEmpty   = document.getElementById("empty");
+const elSearch  = document.getElementById("search");
+const elCatPills= document.getElementById("filter-categories");
+const elReg     = document.getElementById("filter-region");
+const elPrice   = document.getElementById("filter-price");
+const elRating  = document.getElementById("filter-rating");
+const elSort    = document.getElementById("sort");
+const elClear   = document.getElementById("clear");
+const elHeroCount = document.getElementById("hero-count");
+const elFeatured  = document.getElementById("featured-grid");
 
-const elSearch = document.getElementById("search");
-const elCat = document.getElementById("filter-category");
-const elReg = document.getElementById("filter-region");
-const elPrice = document.getElementById("filter-price");
-const elRating = document.getElementById("filter-rating");
-const elSort = document.getElementById("sort");
-const elClear = document.getElementById("clear");
+/* Estado dos filtros (categoria via pills) */
+let activeCategory = "";
 
-// Mapeamento de cores para categorias
-const categoryColors = {
-  'árabe': 'cat-arabe',
-  'asiatico': 'cat-asiatico',
-  'cachorro quente': 'cat-cachorro-quente',
-  'café/doceria': 'cat-cafe',
-  'churrasco/parrilla': 'cat-churrasco',
-  'frutos do mar': 'cat-frutos-mar',
-  'hambúrguer': 'cat-hamburguer',
-  'italiano': 'cat-italiano',
-  'mediterrâneo/gourmet': 'cat-mediterraneo',
-  'mexicano': 'cat-mexicano',
-  'pizza': 'cat-pizza',
-  'regional': 'cat-regional',
-  'comida dia a dia': 'cat-dia-a-dia'
-};
-
-// Dados carregados
-let rows = [];
-
-// ---------- util: normalização ----------
-function norm(s){
+/* ---------- utils ---------- */
+function norm(s) {
   return String(s ?? "")
     .trim()
     .toLowerCase()
@@ -47,310 +32,368 @@ function norm(s){
     .replace(/\p{Diacritic}/gu, "");
 }
 
-// ---------- detectar REGIÕES como TAGS (multi-label) ----------
-function detectRegions(text){
+function escapeHtml(str) {
+  return String(str || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+/* ---------- detect regions (multi-tag) ---------- */
+function detectRegions(text) {
   const t = norm(text);
   const regions = [];
-
-  if (t.includes("lago norte")) regions.push("Lago Norte");
-  if (t.includes("lago sul")) regions.push("Lago Sul");
-  if (t.includes("asa norte")) regions.push("Asa Norte");
-  if (t.includes("asa sul")) regions.push("Asa Sul");
-  if (t.includes("sudoeste")) regions.push("Sudoeste");
-  if (t.includes("noroeste")) regions.push("Noroeste");
-  if (t.includes("octogonal")) regions.push("Octogonal");
-  if (t.includes("vicente pires") || t.includes("vicente-pires")) regions.push("Vicente Pires");
-  if (t.includes("aguas claras") || t.includes("águas claras")) regions.push("Águas Claras");
-  if (t.includes("guara") || t.includes("guará")) regions.push("Guará");
-  if (t.includes("taguatinga")) regions.push("Taguatinga");
-  if (t.includes("ceilandia") || t.includes("ceilândia")) regions.push("Ceilândia");
-  if (t.includes("samambaia")) regions.push("Samambaia");
-  if (t.includes("sobradinho")) regions.push("Sobradinho");
-  if (t.includes("planaltina")) regions.push("Planaltina");
-  if (t.includes("gama")) regions.push("Gama");
-  if (t.includes("plano piloto") || t === "plano piloto") regions.push("Plano Piloto");
-  if (t.includes("vila planalto")) regions.push("Vila Planalto");
-
+  const checks = [
+    ["lago norte", "Lago Norte"],
+    ["lago sul", "Lago Sul"],
+    ["asa norte", "Asa Norte"],
+    ["asa sul", "Asa Sul"],
+    ["sudoeste", "Sudoeste"],
+    ["noroeste", "Noroeste"],
+    ["octogonal", "Octogonal"],
+    ["vicente pires", "Vicente Pires"],
+    ["aguas claras", "Águas Claras"],
+    ["guara", "Guará"],
+    ["taguatinga", "Taguatinga"],
+    ["ceilandia", "Ceilândia"],
+    ["samambaia", "Samambaia"],
+    ["sobradinho", "Sobradinho"],
+    ["planaltina", "Planaltina"],
+    ["gama", "Gama"],
+    ["plano piloto", "Plano Piloto"],
+    ["vila planalto", "Vila Planalto"]
+  ];
+  checks.forEach(([needle, label]) => {
+    if (t.includes(needle)) regions.push(label);
+  });
   return Array.from(new Set(regions));
 }
 
-// ---------- função para classificar preços (SIMPLIFICADA) ----------
+/* ---------- price ---------- */
 function getPriceInfo(priceStr) {
-  if (!priceStr || priceStr.trim() === '') {
-    return { 
-      filterValue: '',
-      cssClass: 'price-indefinido',
-      label: '--'
-    };
+  if (!priceStr || !priceStr.trim()) {
+    return { filterValue: "", cssClass: "", label: "", symbol: "" };
   }
-  
-  const cleanStr = norm(priceStr);
-  
-  // Verifica descrições textuais
-  if (cleanStr.includes('barato')) {
-    return { 
-      filterValue: 'barato',
-      cssClass: 'price-barato',
-      label: 'Barato'
-    };
+  const c = norm(priceStr);
+
+  if (c.includes("muito caro") || c.includes("muito-caro")) {
+    return { filterValue: "muito-caro", cssClass: "pr-muito", label: "Muito Caro", symbol: "$$$$" };
   }
-  
-  if (cleanStr.includes('preço ok') || cleanStr.includes('preco ok') || cleanStr.includes('ok')) {
-    return { 
-      filterValue: 'ok',
-      cssClass: 'price-ok',
-      label: 'Preço OK'
-    };
+  if (c.includes("barato")) {
+    return { filterValue: "barato", cssClass: "pr-barato", label: "Barato", symbol: "$" };
   }
-  
-  if (cleanStr.includes('caro') && !cleanStr.includes('muito')) {
-    return { 
-      filterValue: 'caro',
-      cssClass: 'price-caro',
-      label: 'Caro'
-    };
+  if (c.includes("preço ok") || c.includes("preco ok") || c === "ok") {
+    return { filterValue: "ok", cssClass: "pr-ok", label: "Preço OK", symbol: "$$" };
   }
-  
-  if (cleanStr.includes('muito caro') || cleanStr.includes('muito-caro')) {
-    return { 
-      filterValue: 'muito-caro',
-      cssClass: 'price-muito-caro',
-      label: 'Muito Caro'
-    };
+  if (c.includes("caro")) {
+    return { filterValue: "caro", cssClass: "pr-caro", label: "Caro", symbol: "$$$" };
   }
-  
-  // Se for número
-  const numericStr = cleanStr.replace(/[r$\s,]/g, '');
-  const match = numericStr.match(/(\d+(?:\.\d+)?)/);
-  
-  if (match) {
-    const value = parseFloat(match[1]);
-    
-    if (value <= 40) return { 
-      filterValue: 'barato',
-      cssClass: 'price-barato',
-      label: `R$ ${value}`
-    };
-    if (value <= 80) return { 
-      filterValue: 'ok',
-      cssClass: 'price-ok',
-      label: `R$ ${value}`
-    };
-    if (value <= 120) return { 
-      filterValue: 'caro',
-      cssClass: 'price-caro',
-      label: `R$ ${value}`
-    };
-    return { 
-      filterValue: 'muito-caro',
-      cssClass: 'price-muito-caro',
-      label: `R$ ${value}`
-    };
+  // numeric fallback
+  const m = c.replace(/[r$\s,]/g, "").match(/(\d+(?:\.\d+)?)/);
+  if (m) {
+    const v = parseFloat(m[1]);
+    if (v <= 40)  return { filterValue: "barato", cssClass: "pr-barato", label: `R$ ${v}`, symbol: "$" };
+    if (v <= 80)  return { filterValue: "ok", cssClass: "pr-ok", label: `R$ ${v}`, symbol: "$$" };
+    if (v <= 120) return { filterValue: "caro", cssClass: "pr-caro", label: `R$ ${v}`, symbol: "$$$" };
+    return { filterValue: "muito-caro", cssClass: "pr-muito", label: `R$ ${v}`, symbol: "$$$$" };
   }
-  
-  return { 
-    filterValue: '',
-    cssClass: 'price-indefinido',
-    label: priceStr
-  };
+  return { filterValue: "", cssClass: "", label: priceStr, symbol: "" };
 }
 
-// ---------- função para classificar avaliações (SIMPLIFICADA) ----------
+/* ---------- rating ---------- */
 function getRatingInfo(ratingStr) {
-  if (!ratingStr || ratingStr.trim() === '') {
-    return { filterValue: '', cssClass: '', label: '' };
+  if (!ratingStr || !ratingStr.trim()) {
+    return { filterValue: "", cssClass: "", label: "", order: 0 };
   }
-  
-  const ratingNorm = norm(ratingStr);
-  
-  if (ratingNorm.includes('perfeito')) {
-    return { 
-      filterValue: 'perfeito',
-      cssClass: 'perfeito',
-      label: 'Perfeito'
-    };
-  }
-  
-  if (ratingNorm.includes('otimo') || ratingNorm.includes('ótimo')) {
-    return { 
-      filterValue: 'otimo',
-      cssClass: 'otimo',
-      label: 'Ótimo'
-    };
-  }
-  
-  if (ratingNorm.includes('bom')) {
-    return { 
-      filterValue: 'bom',
-      cssClass: 'bom',
-      label: 'Bom'
-    };
-  }
-  
-  if (ratingNorm.includes('ainda não fui')) {
-    return { 
-      filterValue: 'pendente',
-      cssClass: 'pendente',
-      label: 'Ainda Não Fui'
-    };
-  }
-  
-  return { filterValue: '', cssClass: '', label: ratingStr };
+  const r = norm(ratingStr);
+  if (r.includes("perfeito"))               return { filterValue: "perfeito", cssClass: "rt-perfeito", label: "Perfeito", order: 4 };
+  if (r.includes("otimo") || r.includes("ótimo")) return { filterValue: "otimo", cssClass: "rt-otimo", label: "Ótimo", order: 3 };
+  if (r.includes("bom"))                    return { filterValue: "bom", cssClass: "rt-bom", label: "Bom", order: 2 };
+  if (r.includes("ainda não fui") || r.includes("ainda nao fui")) return { filterValue: "pendente", cssClass: "rt-pendente", label: "Quero ir", order: 1 };
+  return { filterValue: "", cssClass: "", label: ratingStr, order: 0 };
 }
 
-// ---------- função para obter classe CSS de categoria ----------
-function getCategoryClass(category) {
-  if (!category) return '';
-  
-  const normalizedCategory = norm(category);
-  
-  for (const [key, cssClass] of Object.entries(categoryColors)) {
-    if (normalizedCategory.includes(norm(key))) {
-      return cssClass;
-    }
-  }
-  
-  return 'cat-generic';
+/* ---------- CSV parser ---------- */
+function detectDelimiter(text) {
+  const first = text.split(/\r?\n/).find(l => l.trim().length > 0) || "";
+  const c = (first.match(/,/g) || []).length;
+  const s = (first.match(/;/g) || []).length;
+  return s > c ? ";" : ",";
 }
 
-// ---------- parser CSV ----------
-function detectDelimiter(text){
-  const firstLine = text.split(/\r?\n/).find(l => l.trim().length > 0) || "";
-  const commas = (firstLine.match(/,/g) || []).length;
-  const semis  = (firstLine.match(/;/g) || []).length;
-  return semis > commas ? ";" : ",";
-}
-
-function splitCSVLine(line, delim){
+function splitCSVLine(line, delim) {
   const out = [];
-  let cur = "";
-  let inQuotes = false;
-  for(let i=0; i<line.length; i++){
+  let cur = "", inQ = false;
+  for (let i = 0; i < line.length; i++) {
     const ch = line[i];
-    if(ch === '"'){
-      if(inQuotes && line[i+1] === '"'){ cur += '"'; i++; } 
-      else { inQuotes = !inQuotes; }
+    if (ch === '"') {
+      if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
+      else { inQ = !inQ; }
       continue;
     }
-    if(ch === delim && !inQuotes){ out.push(cur); cur = ""; continue; }
+    if (ch === delim && !inQ) { out.push(cur); cur = ""; continue; }
     cur += ch;
   }
   out.push(cur);
   return out;
 }
 
-function parseCSV(text){
+function parseCSV(text) {
   const delim = detectDelimiter(text);
   const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
-  if(lines.length === 0) return [];
+  if (!lines.length) return [];
   const headers = splitCSVLine(lines[0], delim).map(h => h.trim());
   const data = [];
-  for(let i=1; i<lines.length; i++){
+  for (let i = 1; i < lines.length; i++) {
     const parts = splitCSVLine(lines[i], delim);
     const obj = {};
-    for(let c=0; c<headers.length; c++){ obj[headers[c]] = (parts[c] ?? "").trim(); }
+    headers.forEach((h, idx) => { obj[h] = (parts[idx] ?? "").trim(); });
     data.push(obj);
   }
   return data;
 }
 
-// ---------- mapeamento de colunas ----------
+/* ---------- column aliases ---------- */
 const aliases = {
-  name: ["nome", "nome do local", "local", "lugar", "estabelecimento", "title"],
-  category: ["categoria", "tipo", "tipo de comida", "comida", "category"],
-  region: ["bairro", "regiao", "região", "area", "localizacao", "localização"],
-  desc: ["descricao", "descrição", "comentario", "dica", "recomendacoes de pratos", "recomendações de pratos"],
-  maps: ["maps", "google maps", "mapa"],
-  coords: ["coordenadas", "coord", "latlng", "latitude"],
-  price: ["preço", "preco", "faixa de preço", "valor", "custo", "price", "price range"],
-  rating: ["avaliação", "avaliacao", "classificação", "classificacao", "nota", "rating", "avaliacao pessoal", "minha avaliacao"]
+  name:    ["nome do local", "nome", "local", "lugar", "estabelecimento"],
+  category:["categoria", "tipo de comida", "tipo", "comida"],
+  region:  ["localizacao", "localização", "bairro", "regiao", "região", "area"],
+  desc:    ["recomendacoes de pratos", "recomendações de pratos", "descricao", "descrição", "comentario", "dica"],
+  maps:    ["maps link", "maps", "google maps", "mapa"],
+  coords:  ["coordenadas", "coord", "latlng", "latitude"],
+  price:   ["preço", "preco", "faixa de preço", "valor", "custo"],
+  rating:  ["avaliação", "avaliacao", "classificação", "nota"]
 };
 
-function findColumn(headers, key){
+function findColumn(headers, key) {
   const hs = headers.map(h => ({ raw: h, n: norm(h) }));
-  const list = aliases[key];
-  if (!list) return null;
-  for(const a of list){
+  for (const a of aliases[key]) {
     const target = norm(a);
     const found = hs.find(h => h.n === target || h.n.includes(target));
-    if(found) return found.raw;
+    if (found) return found.raw;
   }
   return null;
 }
 
-function pick(obj, col){ return col ? (obj[col] ?? "") : ""; }
+function pick(obj, col) { return col ? (obj[col] ?? "") : ""; }
 
-function safeLink(url){
+function safeLink(url) {
   const u = String(url || "").trim();
-  if(!u) return "";
+  if (!u) return "";
   return /^https?:\/\//i.test(u) ? u : "https://" + u;
 }
 
-function mapsFromCoords(coords){
+function mapsFromCoords(coords) {
   const c = String(coords || "").trim();
-  if(!c) return "";
+  if (!c) return "";
   const cleaned = c.replace(/;/g, ",").replace(/\s+/g, " ");
-  const match = cleaned.match(/(-?\d+(\.\d+)?)[,\s]+(-?\d+(\.\d+)?)/);
-  if(!match) return "";
-  return `https://www.google.com/maps/search/?api=1&query=${match[1]},${match[3]}`;
+  const m = cleaned.match(/(-?\d+(\.\d+)?)[,\s]+(-?\d+(\.\d+)?)/);
+  if (!m) return "";
+  return `https://www.google.com/maps/search/?api=1&query=${m[1]},${m[3]}`;
 }
 
-// ---------- montar modelo ----------
-function buildModel(data){
+/* ---------- normalize description (strip "Minha Sugestão:") ---------- */
+function cleanDesc(d) {
+  if (!d) return "";
+  return d.replace(/^minha sugest[ãa]o:\s*/i, "").trim();
+}
+
+/* ---------- build model ---------- */
+function buildModel(data) {
   const headers = Object.keys(data[0] || {});
   const cols = {
-    name: findColumn(headers, "name"),
-    cat: findColumn(headers, "category"),
-    reg: findColumn(headers, "region"),
-    desc: findColumn(headers, "desc"),
-    maps: findColumn(headers, "maps"),
+    name:   findColumn(headers, "name"),
+    cat:    findColumn(headers, "category"),
+    reg:    findColumn(headers, "region"),
+    desc:   findColumn(headers, "desc"),
+    maps:   findColumn(headers, "maps"),
     coords: findColumn(headers, "coords"),
-    price: findColumn(headers, "price"),
+    price:  findColumn(headers, "price"),
     rating: findColumn(headers, "rating")
   };
 
   return data.map((r, idx) => {
-    const name = pick(r, cols.name) || `Item ${idx+1}`;
-    const category = pick(r, cols.cat);
+    const name = pick(r, cols.name) || `Item ${idx + 1}`;
+    const category = pick(r, cols.cat).trim();
     const regionRaw = pick(r, cols.reg);
-    const regionsDetected = detectRegions(regionRaw);
-    const regions = (regionsDetected.length > 0) ? regionsDetected : (regionRaw ? [regionRaw] : []);
-    const desc = pick(r, cols.desc);
+    const detected = detectRegions(regionRaw);
+    const regions = detected.length ? detected : (regionRaw ? [regionRaw] : []);
+    const desc = cleanDesc(pick(r, cols.desc));
     const coords = pick(r, cols.coords);
     const maps = pick(r, cols.maps);
     const price = pick(r, cols.price);
     const rating = pick(r, cols.rating);
-    
-    // Obtém informações
+
     const priceInfo = getPriceInfo(price);
     const ratingInfo = getRatingInfo(rating);
-    const categoryClass = getCategoryClass(category);
-    
+
     const searchable = norm([name, category, regions.join(" "), desc, price, rating].join(" "));
 
-    return { 
-      name, 
-      category, 
-      regions, 
-      desc, 
-      maps, 
-      coords, 
-      price, 
-      rating,
+    return {
+      name, category, regions, desc, maps, coords,
       priceFilterValue: priceInfo.filterValue,
       priceClass: priceInfo.cssClass,
       priceLabel: priceInfo.label,
+      priceSymbol: priceInfo.symbol,
       ratingFilterValue: ratingInfo.filterValue,
       ratingClass: ratingInfo.cssClass,
       ratingLabel: ratingInfo.label,
-      categoryClass,
-      searchable 
+      ratingOrder: ratingInfo.order,
+      searchable
     };
   });
 }
 
-// ---------- UI e Render ----------
-function fillSelect(selectEl, values, firstLabel){
+/* ---------- featured picks (Carlos's words) ---------- */
+const FEATURED_PICKS = [
+  {
+    nameMatch: "cafezin",
+    why: "Atendimento impecável, comida deliciosa e preço abaixo do mercado em Brasília. Daqueles lugares que você descobre e quer guardar pra si.",
+  },
+  {
+    nameMatch: "nazo",
+    why: "Sushi sério e rodízio inovador, num ambiente que faz parte da experiência. Vai com fome, sai com história pra contar.",
+  },
+  {
+    nameMatch: "fuego",
+    why: "Carnes excelentes, acompanhamentos no mesmo nível, e atendimento que te faz pedir (e amar) cortes que você nem conhecia.",
+  },
+  {
+    nameMatch: "bsb grill",
+    why: "Mesmo espírito do Fuego, outra casa: te apresentam cortes que quebram preconceito. Cada visita ensina algo sobre churrasco.",
+  }
+];
+
+function renderFeatured(rows) {
+  const picks = FEATURED_PICKS.map((p, i) => {
+    const m = rows.find(r => norm(r.name).includes(p.nameMatch));
+    return m ? { ...m, why: p.why, num: i + 1 } : null;
+  }).filter(Boolean);
+
+  elFeatured.innerHTML = picks.map(item => {
+    const mapUrl = mapsFromCoords(item.coords) || safeLink(item.maps);
+    return `
+      <article class="feature">
+        <div class="feature__num">Nº 0${item.num}</div>
+        <h3 class="feature__name">${escapeHtml(item.name)}</h3>
+        <p class="feature__why">${escapeHtml(item.why)}</p>
+        <div class="feature__foot">
+          <span>${escapeHtml(item.category)}</span>
+          <span>·</span>
+          <span>${escapeHtml(item.regions.join(", "))}</span>
+          ${mapUrl ? `<a href="${mapUrl}" target="_blank" rel="noopener">Ver no mapa →</a>` : ""}
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+/* ---------- render cards ---------- */
+let rows = [];
+
+function render(list) {
+  elGrid.innerHTML = "";
+  if (!list.length) {
+    elEmpty.classList.remove("hidden");
+    elCount.textContent = "";
+    return;
+  }
+  elEmpty.classList.add("hidden");
+
+  const frag = document.createDocumentFragment();
+  list.forEach(item => {
+    const mapUrl = mapsFromCoords(item.coords) || safeLink(item.maps);
+
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="card__head">
+        <h3 class="card__name">${escapeHtml(item.name)}</h3>
+        ${item.ratingLabel ? `<span class="card__rating ${item.ratingClass}">${escapeHtml(item.ratingLabel)}</span>` : ""}
+      </div>
+      ${item.category ? `<div class="card__cat">${escapeHtml(item.category)}</div>` : ""}
+      <p class="card__desc ${item.desc ? "" : "card__desc--empty"}">${item.desc ? escapeHtml(item.desc) : "Ainda sem nota pessoal."}</p>
+      <div class="card__foot">
+        <div class="card__regions">
+          ${item.regions.map(rg => `<span class="card__region">${escapeHtml(rg)}</span>`).join("")}
+        </div>
+        ${item.priceSymbol ? `<span class="card__price ${item.priceClass}" title="${escapeHtml(item.priceLabel)}">${item.priceSymbol}</span>` : ""}
+        ${mapUrl ? `<a href="${mapUrl}" target="_blank" rel="noopener" class="card__map">📍 Abrir no mapa</a>` : ""}
+      </div>
+    `;
+    frag.appendChild(card);
+  });
+  elGrid.appendChild(frag);
+
+  elCount.textContent = `${list.length} ${list.length === 1 ? "lugar" : "lugares"}`;
+}
+
+/* ---------- filtering & sorting ---------- */
+function apply() {
+  const q = norm(elSearch.value);
+  const reg = elReg.value;
+  const priceRange = elPrice.value;
+  const ratingFilter = elRating.value;
+  const sortKey = elSort.value;
+
+  let filtered = rows.filter(r => {
+    if (q && !r.searchable.includes(q)) return false;
+    if (activeCategory && r.category !== activeCategory) return false;
+    if (reg && !r.regions.includes(reg)) return false;
+    if (priceRange && r.priceFilterValue !== priceRange) return false;
+    if (ratingFilter && r.ratingFilterValue !== ratingFilter) return false;
+    return true;
+  });
+
+  filtered.sort((a, b) => {
+    if (sortKey === "name-desc") return b.name.localeCompare(a.name);
+    if (sortKey === "rating-desc") {
+      if (b.ratingOrder !== a.ratingOrder) return b.ratingOrder - a.ratingOrder;
+      return a.name.localeCompare(b.name);
+    }
+    return a.name.localeCompare(b.name);
+  });
+
+  render(filtered);
+}
+
+/* ---------- populate category pills ---------- */
+function fillCategoryPills(rows) {
+  const counts = {};
+  rows.forEach(r => {
+    if (!r.category) return;
+    counts[r.category] = (counts[r.category] || 0) + 1;
+  });
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+  elCatPills.innerHTML = "";
+  const allBtn = document.createElement("button");
+  allBtn.className = "pill pill--active";
+  allBtn.type = "button";
+  allBtn.dataset.value = "";
+  allBtn.innerHTML = `Todas <span class="pill__count">${rows.length}</span>`;
+  elCatPills.appendChild(allBtn);
+
+  sorted.forEach(([cat, n]) => {
+    const btn = document.createElement("button");
+    btn.className = "pill";
+    btn.type = "button";
+    btn.dataset.value = cat;
+    btn.innerHTML = `${escapeHtml(cat)} <span class="pill__count">${n}</span>`;
+    elCatPills.appendChild(btn);
+  });
+
+  elCatPills.addEventListener("click", e => {
+    const t = e.target.closest(".pill");
+    if (!t) return;
+    activeCategory = t.dataset.value;
+    elCatPills.querySelectorAll(".pill").forEach(p => p.classList.toggle("pill--active", p === t));
+    apply();
+  });
+}
+
+function fillSelect(selectEl, values, firstLabel) {
   selectEl.innerHTML = `<option value="">${firstLabel}</option>`;
   values.forEach(v => {
     const op = document.createElement("option");
@@ -359,164 +402,77 @@ function fillSelect(selectEl, values, firstLabel){
   });
 }
 
-function escapeHtml(str){
-  return String(str || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-}
-
-function render(list){
-  elGrid.innerHTML = "";
-  if(list.length === 0){
-    elEmpty.classList.remove("hidden");
-    elCount.textContent = "";
-    return;
-  }
-  elEmpty.classList.add("hidden");
-
-  list.forEach(item => {
-    const card = document.createElement("article");
-    card.className = "card";
-
-    // Link do mapa
-    const mapUrl = mapsFromCoords(item.coords) || safeLink(item.maps);
-    
-    // Badges
-    const priceBadge = item.priceLabel !== '--' ? 
-      `<span class="badge price-badge ${item.priceClass}">${escapeHtml(item.priceLabel)}</span>` : '';
-    
-    // AVALIAÇÃO: Adiciona rating-badge para manter estilização CSS
-    const ratingBadge = item.ratingLabel ? 
-      `<span class="badge rating-badge ${item.ratingClass}">${escapeHtml(item.ratingLabel)}</span>` : '';
-    
-    const categoryBadge = item.category ? 
-      `<span class="badge ${item.categoryClass}">${escapeHtml(item.category)}</span>` : '';
-
-    card.innerHTML = `
-      <div class="card-inner">
-        <div class="card-title">
-          <h3 class="name">${escapeHtml(item.name)}</h3>
-          <div class="title-badges">
-            ${categoryBadge}
-            ${priceBadge}
-            ${ratingBadge}
-          </div>
-        </div>
-
-        <p class="desc">${escapeHtml(item.desc)}</p>
-
-        <div class="location-row">
-          ${item.regions.map(rg => `<span class="badge">${escapeHtml(rg)}</span>`).join("")}
-          
-          ${mapUrl ? `
-            <a href="${mapUrl}" target="_blank" rel="noopener" class="map-link">
-              📍 Ver no mapa
-            </a>
-          ` : ""}
-        </div>
-      </div>
-    `;
-    elGrid.appendChild(card);
-  });
-
-  elCount.textContent = `${list.length} lugares exibidos`;
-}
-
-// ---------- Filtros e Init ----------
-function apply(){
-  const q = norm(elSearch.value);
-  const cat = elCat.value;
-  const reg = elReg.value;
-  const priceRange = elPrice.value;
-  const ratingFilter = elRating.value;
-
-  let filtered = rows.filter(r => {
-    if(q && !r.searchable.includes(q)) return false;
-    if(cat && r.category !== cat) return false;
-    if(reg && !r.regions.includes(reg)) return false;
-    
-    // FILTRO DE PREÇO
-    if(priceRange && r.priceFilterValue !== priceRange) return false;
-    
-    // FILTRO DE AVALIAÇÃO
-    if(ratingFilter && r.ratingFilterValue !== ratingFilter) return false;
-    
-    return true;
-  });
-
-  const s = elSort.value;
-  filtered.sort((a,b) => s === "name-desc" ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name));
-  render(filtered);
-}
-
-async function init(){
+/* ---------- init ---------- */
+async function init() {
   try {
     const res = await fetch(CSV_PATH, { cache: "no-store" });
     const text = await res.text();
     const data = parseCSV(text);
-    if(data.length === 0) return;
+    if (!data.length) {
+      elStatus.textContent = "Sem dados.";
+      return;
+    }
 
     rows = buildModel(data);
-    
-    // Preencher filtros
-    fillSelect(elCat, Array.from(new Set(rows.map(r => r.category))).sort(), "Categoria");
-    fillSelect(elReg, Array.from(new Set(rows.flatMap(r => r.regions))).sort(), "Região");
-    
-    // Preencher filtro de preço
-    const priceOptions = [
-      {value: 'barato', label: 'Barato (0-40)'},
-      {value: 'ok', label: 'Preço OK (40-80)'},
-      {value: 'caro', label: 'Caro (80-120)'},
-      {value: 'muito-caro', label: 'Muito Caro (120+)'}
+
+    elHeroCount.textContent = rows.length;
+
+    fillCategoryPills(rows);
+
+    const regions = Array.from(new Set(rows.flatMap(r => r.regions))).sort();
+    fillSelect(elReg, regions, "Todas as regiões");
+
+    const priceOpts = [
+      { value: "barato", label: "$ Barato" },
+      { value: "ok", label: "$$ Preço OK" },
+      { value: "caro", label: "$$$ Caro" },
+      { value: "muito-caro", label: "$$$$ Muito Caro" }
     ];
-    
-    elPrice.innerHTML = '<option value="">Preço</option>';
-    priceOptions.forEach(opt => {
+    elPrice.innerHTML = '<option value="">Qualquer preço</option>';
+    priceOpts.forEach(o => {
       const op = document.createElement("option");
-      op.value = opt.value;
-      op.textContent = opt.label;
+      op.value = o.value; op.textContent = o.label;
       elPrice.appendChild(op);
     });
 
-    // Preencher filtro de avaliação (valores simples)
-    const ratingOptions = [
-      {value: 'bom', label: 'Bom'},
-      {value: 'otimo', label: 'Ótimo'},
-      {value: 'perfeito', label: 'Perfeito'},
-      {value: 'pendente', label: 'Ainda Não Fui'}
+    const ratingOpts = [
+      { value: "perfeito", label: "Perfeito" },
+      { value: "otimo", label: "Ótimo" },
+      { value: "bom", label: "Bom" },
+      { value: "pendente", label: "Quero ir" }
     ];
-    
-    elRating.innerHTML = '<option value="">Avaliação</option>';
-    ratingOptions.forEach(opt => {
+    elRating.innerHTML = '<option value="">Qualquer avaliação</option>';
+    ratingOpts.forEach(o => {
       const op = document.createElement("option");
-      op.value = opt.value;
-      op.textContent = opt.label;
+      op.value = o.value; op.textContent = o.label;
       elRating.appendChild(op);
     });
 
-    elStatus.textContent = "Base carregada ✅";
+    renderFeatured(rows);
+
+    elStatus.textContent = "Base carregada";
     apply();
-  } catch(err) {
+  } catch (err) {
     elStatus.textContent = "Erro ao carregar dados.";
-    console.error("Erro ao carregar dados:", err);
+    console.error(err);
   }
 }
 
-// ---------- Event Listeners ----------
+/* ---------- events ---------- */
 elSearch.addEventListener("input", apply);
-elCat.addEventListener("change", apply);
 elReg.addEventListener("change", apply);
 elPrice.addEventListener("change", apply);
 elRating.addEventListener("change", apply);
 elSort.addEventListener("change", apply);
 elClear.addEventListener("click", () => {
-  elSearch.value = ""; 
-  elCat.value = ""; 
-  elReg.value = ""; 
+  elSearch.value = "";
+  elReg.value = "";
   elPrice.value = "";
   elRating.value = "";
-  elSort.value = "name-asc";
+  elSort.value = "rating-desc";
+  activeCategory = "";
+  elCatPills.querySelectorAll(".pill").forEach(p => p.classList.toggle("pill--active", p.dataset.value === ""));
   apply();
 });
 
-// Inicializar
 init();
-
