@@ -249,7 +249,7 @@ function buildModel(data) {
 const FEATURED_PICKS = [
   {
     nameMatch: "cafezin",
-    why: "Atendimento impecável, comida e doces deliciosos, com preço bacana. Daqueles lugares que você descobre e quer guardar pra si.",
+    why: "Atendimento impecável, salgados e doces deliciosos, com preço bacana. Daqueles lugares que você descobre e quer guardar pra si.",
   },
   {
     nameMatch: "nazo",
