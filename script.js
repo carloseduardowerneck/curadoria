@@ -249,7 +249,7 @@ function buildModel(data) {
 const FEATURED_PICKS = [
   {
     nameMatch: "cafezin",
-    why: "Atendimento impecável, comida deliciosa e preço bacana. Daqueles lugares que você descobre e quer guardar pra si.",
+    why: "Atendimento impecável, comida e doces deliciosos, com preço bacana. Daqueles lugares que você descobre e quer guardar pra si.",
   },
   {
     nameMatch: "nazo",
@@ -257,7 +257,7 @@ const FEATURED_PICKS = [
   },
   {
     nameMatch: "italianissimo",
-    why: "Comida Italiana impecável, com pratos muito bem feitos (e bem servidos). Ótimo para levar alguém que você queira impressionar.",
+    why: "Comida Italiana espetacular, com pratos muito bem feitos (e bem servidos). Ótimo para levar alguém que você queira impressionar.",
   },
   {
     nameMatch: "bsb grill",
