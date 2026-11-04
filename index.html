@@ -5,83 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Curadoria BSB — Guia pessoal de Brasília</title>
   <meta name="description" content="Onde comer bem e tomar café em Brasília. Curadoria pessoal de 100+ lugares testados." />
+  <meta name="theme-color" content="#1846a3" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231846a3'/%3E%3Cpath d='M0 0h32A32 32 0 0 1 0 32z' fill='%23f7f7f4'/%3E%3Ccircle cx='24' cy='24' r='5' fill='%23f4b400'/%3E%3C/svg%3E" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
 
+  <!-- ============== TOPO ============== -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <span class="topbar__brand">Curadoria BSB</span>
+      <a class="topbar__link" href="mailto:carloseduardowerneck1@gmail.com">Sugerir um lugar</a>
+    </div>
+  </div>
+
   <!-- ============== HERO ============== -->
   <header class="hero">
-    <div class="hero__bg" aria-hidden="true"></div>
-    <div class="hero__inner container">
-      <div class="hero__eyebrow">
-        <span class="dot"></span>
-        Curadoria pessoal · Brasília
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <p class="hero__kicker">Guia pessoal · Plano Piloto e arredores</p>
+        <h1 class="hero__title">Onde comer e tomar café em Brasília</h1>
+        <p class="hero__lede">
+          Um guia honesto dos lugares que eu volto, dos que vale a pena conhecer, e
+          dos que eu ainda quero testar. Sem propaganda e sem ranking de algoritmo.
+          Só o que eu de fato gosto.
+        </p>
+        <p class="hero__meta"><strong id="hero-count">—</strong> lugares · atualizado constantemente</p>
       </div>
-      <h1 class="hero__title">
-        Onde comer<br />
-        <em>(e tomar café)</em><br />
-        em Brasília.
-      </h1>
-      <p class="hero__lede">
-        Um guia honesto dos lugares que eu volto, dos que vale a pena conhecer, e
-        dos que eu ainda quero testar. Sem propaganda e sem ranking de algoritmo. 
-        Só o que eu de fato gosto.
-      </p>
-      <div class="hero__meta">
-        <span><strong id="hero-count">—</strong> lugares</span>
-        <span class="hero__divider"></span>
-        <span>Atualizado constantemente</span>
-        <span class="hero__divider"></span>
-        <a href="mailto:carloseduardowerneck1@gmail.com">Sugerir um lugar →</a>
-      </div>
+      <div class="hero__tiles" id="hero-tiles" aria-hidden="true"></div>
     </div>
   </header>
 
-  <!-- ============== INTRO / VOICE ============== -->
+  <!-- ============== SOBRE ============== -->
   <section class="intro container">
-    <div class="intro__rule"></div>
-    <div class="intro__grid">
-      <h2 class="intro__heading">O que você vai encontrar aqui</h2>
-      <div class="intro__body">
-        <p>
-          Eu moro em Brasília e como fora com frequência. Ao longo dos anos fui
-          juntando uma lista mental dos lugares que valiam a pena, e achei que valia a pena dividir com quem também gosta de comer bem em Brasília. Daí esse guia.
-        </p>
-        <p>
-          Não é uma lista de tudo. É <em>o que eu gosto</em>. Cada lugar tem
-          minha avaliação (de <span class="pip pip--bom">Bom</span> a
-          <span class="pip pip--perfeito">Perfeito</span>) e o prato que eu
-          pediria se você me chamasse pra ir junto agora.
-        </p>
-      </div>
+    <h2 class="label">Sobre o guia</h2>
+    <div class="intro__body">
+      <p>
+        Eu moro em Brasília e como fora com frequência. Ao longo dos anos fui
+        juntando uma lista mental dos lugares que valiam a pena, e achei que valia a pena dividir com quem também gosta de comer bem em Brasília. Daí esse guia.
+      </p>
+      <p>
+        Não é uma lista de tudo. É <em>o que eu gosto</em>. Cada lugar tem
+        minha avaliação e o prato que eu pediria se você me chamasse pra ir junto agora.
+      </p>
+      <ul class="legend" aria-label="Como ler as avaliações">
+        <li><span class="selo rt-perfeito">Perfeito</span> volto sempre</li>
+        <li><span class="selo rt-otimo">Ótimo</span> recomendo sem medo</li>
+        <li><span class="selo rt-bom">Bom</span> vale se estiver perto</li>
+        <li><span class="selo rt-pendente">Quero ir</span> ainda não fui</li>
+      </ul>
     </div>
   </section>
 
-  <!-- ============== FEATURED PICKS ============== -->
+  <!-- ============== DESTAQUES ============== -->
   <section class="featured container" id="featured">
     <div class="section-head">
-      <span class="section-head__kicker">Os indispensáveis</span>
-      <h2 class="section-head__title">Onde eu sempre volto</h2>
+      <h2 class="label">Os indispensáveis</h2>
+      <p class="section-head__title">Onde eu sempre volto</p>
       <p class="section-head__sub">Quatro lugares que resumem o que essa lista é. Se você só puder ir em quatro endereços, comece por aqui.</p>
     </div>
     <div class="featured__grid" id="featured-grid"></div>
   </section>
 
-  <!-- ============== EXPLORE ============== -->
+  <!-- ============== LISTA ============== -->
   <section class="explore container" id="explore">
     <div class="section-head">
-      <span class="section-head__kicker">A lista completa</span>
-      <h2 class="section-head__title">Explorar todos os lugares</h2>
+      <h2 class="label">A lista completa</h2>
+      <p class="section-head__title">Todos os lugares</p>
     </div>
 
     <div class="filters">
       <div class="filters__search">
-        <svg class="filters__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <svg class="filters__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
           <circle cx="11" cy="11" r="7"/>
           <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
@@ -89,13 +89,11 @@
                placeholder="Buscar por nome, prato, bairro..." />
       </div>
 
-      <div class="filters__row">
-        <div class="filters__group" id="filter-categories" role="tablist" aria-label="Categoria">
-          <!-- pills injected by JS -->
-        </div>
+      <div class="filters__group" id="filter-categories" role="group" aria-label="Categoria">
+        <!-- botões gerados pelo script -->
       </div>
 
-      <div class="filters__row filters__row--selects">
+      <div class="filters__selects">
         <select id="filter-region" class="filters__select" aria-label="Região">
           <option value="">Todas as regiões</option>
         </select>
@@ -110,7 +108,7 @@
           <option value="name-asc">Nome (A–Z)</option>
           <option value="name-desc">Nome (Z–A)</option>
         </select>
-        <button id="clear" class="filters__clear" type="button">Limpar</button>
+        <button id="clear" class="filters__clear" type="button">Limpar filtros</button>
       </div>
     </div>
 
@@ -122,17 +120,17 @@
     <div id="grid" class="cards"></div>
 
     <div id="empty" class="empty hidden">
-      <h3>Nada encontrado por aqui</h3>
+      <p class="empty__title">Nada encontrado por aqui</p>
       <p>Tente outra palavra, ou limpe os filtros.</p>
     </div>
   </section>
 
-  <!-- ============== FOOTER ============== -->
-  <footer class="footer container">
-    <div class="footer__rule"></div>
-    <div class="footer__inner">
+  <!-- ============== RODAPÉ ============== -->
+  <footer class="footer">
+    <div class="footer__tiles" id="footer-tiles" aria-hidden="true"></div>
+    <div class="container footer__inner">
       <div>
-        <div class="footer__brand">Curadoria BSB</div>
+        <p class="footer__brand">Curadoria BSB</p>
         <p class="footer__tag">Um projeto pessoal. Sem patrocínio, sem afiliação, sem hype.</p>
       </div>
       <div class="footer__contact">
@@ -142,6 +140,6 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>
