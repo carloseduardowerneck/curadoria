@@ -1,6 +1,7 @@
 /* =========================================================
  * Curadoria BSB — script
- * Mantém parser CSV original; adapta render para layout editorial.
+ * Lê o CSV, monta destaques, filtros e cards.
+ * Desenha os ladrilhos (azulejos) do topo e do rodapé.
  * ========================================================= */
 
 const CSV_PATH = "curadoria_bsb.csv";
@@ -265,24 +266,122 @@ const FEATURED_PICKS = [
   }
 ];
 
+/* ---------- ladrilhos (azulejos) ----------
+ * Cada ladrilho é um quadrado 100x100 com uma forma simples
+ * (quarto de círculo, meio círculo, triângulo...), girada ao acaso.
+ * A semente fixa faz o desenho sair igual em toda visita.
+ */
+const TILE_SHAPES = [
+  "M0 0H100A100 100 0 0 1 0 100Z",                                  // quarto de círculo
+  "M0 100A50 50 0 0 1 100 100Z",                                    // meio círculo
+  "M0 0H100V100Z",                                                  // triângulo
+  "M50 28A22 22 0 1 1 50 72A22 22 0 1 1 50 28Z",                    // círculo
+  "M0 0H50A50 50 0 0 1 0 50ZM100 100H50A50 50 0 0 1 100 50Z",       // dois quartos
+  "M0 0H50V50H0Z",                                                  // quadrado
+  ""                                                                 // vazio
+];
+
+const COLORS = { azul: "#1846a3", escuro: "#0f2f72", branco: "#f7f7f4", ipe: "#f4b400" };
+
+function seededRandom(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function tilesSVG(cols, rows, seed, base) {
+  const rnd = seededRandom(seed);
+  let tiles = "";
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      const shape = TILE_SHAPES[Math.floor(rnd() * TILE_SHAPES.length)];
+      const rot = Math.floor(rnd() * 4) * 90;
+      const inverted = rnd() < 0.3;
+      const bg = inverted ? COLORS.branco : base;
+      let fg = inverted ? base : COLORS.branco;
+      if (rnd() < 0.08) fg = COLORS.ipe;
+      tiles += `<g transform="translate(${x * 100} ${y * 100})">` +
+        `<rect width="100" height="100" fill="${bg}"/>` +
+        (shape ? `<path d="${shape}" fill="${fg}" transform="rotate(${rot} 50 50)"/>` : "") +
+        `</g>`;
+    }
+  }
+  // juntas (rejunte) entre os ladrilhos
+  let grout = "";
+  for (let x = 1; x < cols; x++) grout += `<line x1="${x * 100}" y1="0" x2="${x * 100}" y2="${rows * 100}"/>`;
+  for (let y = 1; y < rows; y++) grout += `<line x1="0" y1="${y * 100}" x2="${cols * 100}" y2="${y * 100}"/>`;
+
+  return `<svg viewBox="0 0 ${cols * 100} ${rows * 100}" xmlns="http://www.w3.org/2000/svg" role="presentation">` +
+    tiles + `<g stroke="${COLORS.escuro}" stroke-width="3">${grout}</g></svg>`;
+}
+
+const elHeroTiles = document.getElementById("hero-tiles");
+const elFooterTiles = document.getElementById("footer-tiles");
+const mqNarrow = window.matchMedia("(max-width: 960px)");
+
+function drawTiles() {
+  if (elHeroTiles) {
+    elHeroTiles.innerHTML = mqNarrow.matches
+      ? tilesSVG(8, 3, 61, COLORS.azul)
+      : tilesSVG(5, 5, 61, COLORS.azul);
+  }
+  if (elFooterTiles) {
+    const cols = Math.ceil(window.innerWidth / 56) + 1;
+    elFooterTiles.innerHTML = tilesSVG(cols, 1, 1960, COLORS.escuro);
+  }
+}
+
+let tilesTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(tilesTimer);
+  tilesTimer = setTimeout(drawTiles, 150);
+});
+drawTiles();
+
+/* ladrilho de canto dos destaques: forma + giro que encostam no canto superior direito */
+const FEATURE_TILES = [
+  { shape: 0, rot: 90 },
+  { shape: 1, rot: 180 },
+  { shape: 3, rot: 0 },
+  { shape: 4, rot: 90 }
+];
+
+function cornerTile(i, color) {
+  const t = FEATURE_TILES[i % FEATURE_TILES.length];
+  return `<svg class="feature__tile" viewBox="0 0 100 100" aria-hidden="true">` +
+    `<path d="${TILE_SHAPES[t.shape]}" fill="${color}" transform="rotate(${t.rot} 50 50)"/></svg>`;
+}
+
+const PIN_ICON = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>`;
+
+function mapButton(url) {
+  return url
+    ? `<a href="${url}" target="_blank" rel="noopener" class="map-btn">${PIN_ICON}Abrir no mapa</a>`
+    : "";
+}
+
 function renderFeatured(rows) {
   const picks = FEATURED_PICKS.map((p, i) => {
     const m = rows.find(r => norm(r.name).includes(p.nameMatch));
     return m ? { ...m, why: p.why, num: i + 1 } : null;
   }).filter(Boolean);
 
-  elFeatured.innerHTML = picks.map(item => {
+  elFeatured.innerHTML = picks.map((item, i) => {
     const mapUrl = mapsFromCoords(item.coords) || safeLink(item.maps);
+    // xadrez: 1º e 4º azuis (em 2 colunas forma um tabuleiro)
+    const azul = (i === 0 || i === 3);
     return `
-      <article class="feature">
-        <div class="feature__num">Nº 0${item.num}</div>
+      <article class="feature ${azul ? "feature--azul" : ""}">
+        ${cornerTile(i, azul ? COLORS.ipe : COLORS.azul)}
+        <div class="feature__num">0${item.num}</div>
         <h3 class="feature__name">${escapeHtml(item.name)}</h3>
         <p class="feature__why">${escapeHtml(item.why)}</p>
         <div class="feature__foot">
-          <span>${escapeHtml(item.category)}</span>
-          <span>·</span>
-          <span>${escapeHtml(item.regions.join(", "))}</span>
-          ${mapUrl ? `<a href="${mapUrl}" target="_blank" rel="noopener">Ver no mapa →</a>` : ""}
+          <span>${escapeHtml(item.category)} · ${escapeHtml(item.regions.join(", "))}</span>
+          ${mapButton(mapUrl)}
         </div>
       </article>
     `;
@@ -310,16 +409,20 @@ function render(list) {
     card.innerHTML = `
       <div class="card__head">
         <h3 class="card__name">${escapeHtml(item.name)}</h3>
-        ${item.ratingLabel ? `<span class="card__rating ${item.ratingClass}">${escapeHtml(item.ratingLabel)}</span>` : ""}
+        ${item.ratingLabel ? `<span class="selo ${item.ratingClass}">${escapeHtml(item.ratingLabel)}</span>` : ""}
       </div>
       ${item.category ? `<div class="card__cat">${escapeHtml(item.category)}</div>` : ""}
-      <p class="card__desc ${item.desc ? "" : "card__desc--empty"}">${item.desc ? escapeHtml(item.desc) : "Ainda sem nota pessoal."}</p>
+      <p class="card__desc ${item.desc ? "" : "card__desc--empty"}">${item.desc
+        ? `<span class="card__desc-label">Sugestão</span>${escapeHtml(item.desc)}`
+        : "Ainda sem nota pessoal."}</p>
       <div class="card__foot">
-        <div class="card__regions">
-          ${item.regions.map(rg => `<span class="card__region">${escapeHtml(rg)}</span>`).join("")}
+        <div class="card__meta">
+          <div class="card__regions">
+            ${item.regions.map(rg => `<span class="card__region">${escapeHtml(rg)}</span>`).join("")}
+          </div>
+          ${item.priceSymbol ? `<span class="card__price" title="${escapeHtml(item.priceLabel)}">${item.priceSymbol}</span>` : ""}
         </div>
-        ${item.priceSymbol ? `<span class="card__price ${item.priceClass}" title="${escapeHtml(item.priceLabel)}">${item.priceSymbol}</span>` : ""}
-        ${mapUrl ? `<a href="${mapUrl}" target="_blank" rel="noopener" class="card__map">📍 Abrir no mapa</a>` : ""}
+        ${mapButton(mapUrl)}
       </div>
     `;
     frag.appendChild(card);
@@ -450,7 +553,7 @@ async function init() {
 
     renderFeatured(rows);
 
-    elStatus.textContent = "Base carregada";
+    elStatus.textContent = "";
     apply();
   } catch (err) {
     elStatus.textContent = "Erro ao carregar dados.";
